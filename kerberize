@@ -239,3 +239,12 @@ echo "If you need to change who can login, edit /etc/ansible/hosts and then run"
 echo "  ansible-pull -f -U https://github.com/clhedrick/kerberos-ansible.git kerberos.yml"
 echo 
 echo "(If you forget this information, just look at the end of the kerberize script.)"
+
+
+echo "Do autofs setup"
+if ! ansible-pull -f -U https://github.com/Rutgers-PANIC-Lab/Src-Infrastructure.git autofs.yaml ;then
+  echo -e "\n***************\n"
+  echo "Autofs setup failed."
+  echo
+  exit 1
+fi
