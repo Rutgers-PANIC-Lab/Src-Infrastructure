@@ -1,0 +1,28 @@
+- hosts: localhost
+  become: true
+  environment:
+    PATH: "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
+
+  tasks:
+    - name: autofs directory
+      when: nocommonmap is not defined or not nocommonmap
+      file: path=/etc/auto.master.d mode=755 owner=root state=directory
+
+
+    - name: home.autofs
+      when: nocommonmap is not defined or not nocommonmap
+      template: src="{{ playbook_dir }}/autofs-files/etc/auto.master.d/home.autofs" dest=/etc/auto.master.d/home.autofs mode=644 owner=root
+      notify:
+        - restart autofs
+
+    - name: auto.home
+      when: nocommonmap is not defined or not nocommonmap
+      template: src="{{ playbook_dir }}/autofs-files/etc/auto.master.d/auto.home" dest=/etc/auto.master.d/auto.home mode=644 owner=root
+      notify:
+        - restart autofs
+
+    - meta: flush_handlers
+
+  handlers:
+      - name: restart autofs
+        service: name=autofs state=restarted enabled=yes
