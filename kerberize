@@ -1,0 +1,241 @@
+#!/bin/bash
+
+# This script is set up for Rutgers computer science.
+# I believe it can be fixed by looking for all occurences of rutgers.edu
+
+# kerberize a host. Mostly this does an ansible-pull of our normal ansible scripts
+# but for that to work need to
+# * ansible, and git [git is needed for ansible-pull]
+#   With Ubuntu we need ansible's special repo; an old ansisible won't do
+# * get key table from web service
+# * ask the user for info on who should login
+# * generate /etc/ansible/hosts for localhost with a setup based on the user's answers
+# * do kerberos-boot.yml and kerberos.yml
+
+DISTRO=`grep '^NAME=' /etc/os-release`
+case "$DISTRO" in
+*Ubuntu* ) DISTRO="Ubuntu" ;;
+*CentOS* ) DISTRO="CentOS" ;;
+*) echo We only support Ubuntu and Centos; exit 1 ;;
+esac
+
+SERVER=services.cs.rutgers.edu
+
+# We'll do a more careful check of hostname in the web service
+# But check for the obvious now.
+if ! hostname | grep '\.' ; then
+echo -e "\n***************\n"
+echo Your hostname must be a fully-qualified name, e.g. foo.cs.rutgers.edu,
+echo not just foo. To change that, fix it in /etc/hostname, and then do
+echo    hostname -F /etc/hostname
+echo
+exit 1
+fi
+
+echo
+echo -e "\n***************\n"
+echo "Please verify the following:"
+echo "* Your computer must have a permanent hostname, registered in DNS."
+echo "* Your computer must have Python 2.6, 2.7, or 3.5+."
+echo "* For Ubuntu, your time must be synchronized by ntp or similar."
+echo "In addition, the conversion won't be very useful unless your"
+echo "usernames are Univerity Netids, although that can be fixed later."
+echo
+echo "Hit CR to continue."
+read foo
+
+# see if we have a good kerberos keytable. If not, get a new one
+# we check that it matches the hostname and that you can actually kinit with it
+KTOK="false"
+if (which klist && which kinit) >/dev/null 2>&1 ; then
+  if  (klist -k -t /etc/krb5.keytab | grep host/`hostname`) > /dev/null 2>&1 ; then
+     KRB5CCNAME=/tmp/krb5cc_$$
+     if (kinit -k -t /etc/krb5.keytab host/`hostname`) > /dev/null 2>&1 ; then
+        KTOK="true"
+     fi
+     kdestroy
+  fi
+fi
+
+# if keytable isn't valid, get a new one
+if ! $KTOK ; then
+echo -e "\n***************\n"
+echo "Please login with a CS username (NetID) and password."
+echo "The user need not exist on this system. However it must be a faculty"
+echo "or someone else authorized to enroll a host in our Kerberos system."
+echo "If you aren't a faculty member, and you aren't sure you've been authorized,"
+echo "please contact help@cs.rutgers.edu"
+echo
+echo -n "Username: "
+read USERNAME
+
+# prived local port to show server we are root
+if ! curl --local-port 1-1023 -u "$USERNAME" -o /tmp/keytable https://$SERVER/accounts/enrollhosts?host=`hostname`; then
+echo -e "\n***************\n"
+echo "Unable to get key table for this host."
+echo
+exit 1
+# key tables begin with 005 then a version number, which is 2 in our case
+elif grep ^$'\05'$'\02' /tmp/keytable; then
+mv /tmp/keytable /etc/krb5.keytab
+chmod 600 /etc/krb5.keytab
+echo "Retrieved apparently valid key table"
+echo
+elif grep "^Error:" /tmp/keytable ; then
+# grep will have printed the error message
+# in principle anything else is a valid key table
+echo
+exit 1
+else
+echo -e "\n***************\n"
+echo "Unable to retrieve key table. Likely cause: bad user name or password."
+exit 1
+fi
+fi
+#end of if kerberos ok
+
+#echo -e "\n***************\n"
+#echo "Do you want to be get user information from our central server?"
+#echo "The easiest answer is no. If you say no, information on users and"
+#echo "groups will continue to come from /etc/passwd and /etc/group, although"
+#echo "only users whose usernames are the same as their NetID will be able to"
+#echo "use Kerberos features. "
+#echo 
+#echo "If you answer yes, information on users and groups will come from the CS"
+#echo "server. Use this for new systems, and if you have more than one computer"
+#echo "and want to maintain information in one place rather than having"
+#echo "separate /etc/passwd files on each system. If you have existing users,"
+#echo "and your UIDs (user numbers) aren't the same as on our central systems,"
+#echo "you'll have some adjustments to make."
+#echo
+#echo "You can answer no initially, and then change your answer after you've"
+#echo "fixed your users to be consitent with the central systems."
+#echo
+#echo "Do you want to be get user information from our central server?"
+
+#while true ; do
+#read USEIPA
+USEIPA="yes"
+#if test "$USEIPA" = "no" -o "$USEIPA" = "yes" ; then
+#   break;
+#fi
+#echo
+#echo "Please answer yes or no"
+#done
+
+if test "$USEIPA" = "yes" ; then
+  #echo -e "\n***************\n"
+  #echo "You have asked for user information to come from our central server."
+  #echo "Since you probably don't want everyone in our database to be able to"
+  #echo "login, you need to specify the name of a group. Any user that is"
+  #echo "a member of the group will be able to login. You can create and update"
+  #echo "the group using the web UI at https://services.cs.rutgers.edu/accounts"
+  #echo 
+  #echo "Anyone listed in /etc/passwd will also be able to login, though if the"
+  #echo "username and UID in /etc/passwd doesn't agree with what's in our"
+  #echo "database they probably won't be able to use Kerberos."
+  #echo
+
+  #while true ; do
+  #echo "Enter group name"
+  #read GROUP
+  GROUP="panic-users"
+  GROUP_ADMIN="panic-admin"
+  #if echo "$GROUP" | egrep '^[a-z][-0-9_a-z]*$' >/dev/null; then
+  #break
+  #fi
+  #echo "Group names should use lowercase, digits, _, -, and begin with a letter"
+  #done
+
+  #while true ; do
+  #echo -e "\n***************\n"
+  #echo "Do you want all LCSR systems staff to be able to login to this system?"
+  #echo
+  #echo -n "Please type \"yes\" or \"no\": "
+  #read LCSR
+  LCSR="yes"
+  #if test "$LCSR" = "yes" -o "$LCSR" = "no" ; then
+  #   break;
+  #fi
+  #done
+fi
+
+if test "$DISTRO" = "Ubuntu" ; then
+
+echo -e "\n***************\n"
+echo "NOTE: You may need to hit carriage return during ansible installation"
+echo
+
+if ! apt-get -qq update || ! apt-get -qq install software-properties-common || ! apt-add-repository ppa:ansible/ansible || ! apt-get -qq update || ! apt-get -qq install ansible git ; then
+echo -e "\n***************\n"
+echo "apt-get failed"
+echo
+exit 1
+fi
+
+elif test "$DISTRO" = "CentOS" ; then
+
+if ! yum -q -y install ansible git ; then
+echo -e "\n***************\n"
+echo "yum failed"
+echo
+exit 1
+fi
+
+fi
+
+# /etc/ansible/hosts has parameters that define who can login
+# They are created based on the answers given by the user above.
+
+cat > /etc/ansible/hosts <<EOF
+# This should have one line beginning with "localhost." The only thing you are likely to 
+# change are the specifications of who can login.
+#
+# Here's an example of a system where user info comes from /etc/passwd
+#   localhost nfsserver=true local_homedir=true idfiles=true net_autofs=true domain=cs.rutgers.edu
+# Here's an example of a system where user info comes from the LCSR database, 
+# and members of mygroup can login. Don't leave out the sudogroups, or anyone will be able to sudo
+#   localhost nfsserver=true local_homedir=true grouplist=mygroup sudogroups=slide net_autofs=true domain=cs.rutgers.edu
+# Here's the same example where LCSR system staff can also login and sudo
+#   localhost nfsserver=true local_homedir=true grouplist=coresysadmins,mygroup sudogroups=slide net_autofs=true domain=cs.rutgers.edu
+# If you already have users authorized to sudo, this setup won't disturb them.
+
+EOF
+if test "$USEIPA" != "yes" ; then
+  echo "localhost nfsserver=true local_homedir=true idfiles=true net_autofs=true domain=cs.rutgers.edu" >> /etc/ansible/hosts
+elif test "$LCSR" = "yes" ; then
+  echo "localhost nfsserver=true local_homedir=true grouplist=coresysadmins,$GROUP sudogroups=slide,$GROUP_ADMIN net_autofs=true domain=cs.rutgers.edu" >> /etc/ansible/hosts
+else
+  echo "localhost nfsserver=true local_homedir=true grouplist=$GROUP sudogroups=slide,$GROUP_ADMIN net_autofs=true domain=cs.rutgers.edu" >> /etc/ansible/hosts
+fi
+
+# now do the real work. 
+
+if ! ansible-pull -f -U https://github.com/clhedrick/kerberos-ansible.git kerberos-boot.yml ; then
+echo -e "\n***************\n"
+echo "There are two steps to the final software installation. The first failed. We won't"
+echo "run the second step until the first one works."
+echo
+exit 1
+fi
+
+if ! ansible-pull -f -U https://github.com/clhedrick/kerberos-ansible.git kerberos.yml ; then
+echo -e "\n***************\n"
+echo "There final step in setup failed."
+echo
+exit 1
+fi
+
+
+echo -e "\n***************\n"
+echo "You can run this script again if you need to. However there are simpler"
+echo "alternatives."
+echo 
+echo "To update the Rutgers Kerberos software or setup, run"
+echo "  ansible-pull -U https://github.com/clhedrick/kerberos-ansible.git kerberos.yml"
+echo "Other Kerberos software will be updated by the normal package manager."
+echo
+echo "If you need to change who can login, edit /etc/ansible/hosts and then run"
+echo "  ansible-pull -f -U https://github.com/clhedrick/kerberos-ansible.git kerberos.yml"
+echo 
+echo "(If you forget this information, just look at the end of the kerberize script.)"
