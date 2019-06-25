@@ -16,6 +16,7 @@
           - libgl1-mesa-dev
           - cmake
           - git-lfs
+          - libpciaccess-dev
 
     - name: Create workspace dir
       file:
