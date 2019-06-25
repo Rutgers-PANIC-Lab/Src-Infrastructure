@@ -211,10 +211,10 @@
     media_driver_version: intel-media-19.1.0
     media_sdk_version: intel-mediasdk-19.1.0
 
-    libva_install: false
-    gmmlib_install: false
-    media_driver_install: false
+    libva_install: true
+    gmmlib_install: true
+    media_driver_install: true
     media_sdk_install: true
-    env_vars_set: false
+    env_vars_set: true
 
 
