@@ -4,6 +4,17 @@
     PATH: "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
 
   tasks:
+    - name: create /localhome directory
+      file:
+        path: "{{ local_home_dir }}"
+        state: directory
+
+    - name: move {{ local_admin_user }} homedir
+      user:
+        name: "{{ local_admin_user }}"
+        home: /localhome/{{ local_admin_user }}
+        move_home: yes
+
     - name: autofs directory
       when: nocommonmap is not defined or not nocommonmap
       file: path=/etc/auto.master.d mode=755 owner=root state=directory
@@ -26,3 +37,7 @@
   handlers:
       - name: restart autofs
         service: name=autofs state=restarted enabled=yes
+
+  vars:
+    local_admin_user: localadmin
+    local_home_dir: /localhome
