@@ -1,0 +1,43 @@
+- hosts: localhost
+  become: true
+
+  tasks:
+    # we assume that it is good if it is already in place
+    - name: Check for existing keytable
+      stat:
+        path: /etc/krb5.keytab
+      register: keytab_stat
+
+    - name: Set up a valid keytable
+      block:
+        - name: Get keytable
+          command: curl --local-port 1-1023 -o /tmp/keytable https://{{ server }}/accounts/enrollhosts?host={{ hostname }}
+          args:
+            warn: no
+
+        - name: Validate the keytable
+          shell: "xxd /tmp/keytable | head -n 1 | grep 0502"
+          register: keytab_validate
+          ignore_errors: true
+
+        - name: Fail if bad keytable
+          fail:
+            msg: "Bad or missing keytable"
+          when: keytab_validate.rc != 0
+
+        - name: Put keytable in place
+          command: mv /tmp/keytable /etc/krb5.keytab
+
+      when: keytab_stat.stat.exists != true
+
+    - name: Set up config file
+      lineinfile:
+        path: /etc/ansible/hosts
+        state: present
+        create: yes
+        line: "localhost nfsserver=true local_homedir=true grouplist=coresysadmins,{{ group }} sudogroups=slide,{{ group_admin }} net_autofs=true domain=cs.rutgers.edu"
+  vars:
+    server: services.cs.rutgers.edu
+    hostname: catalyst-new.cs.rutgers.edu
+    group: panic-users
+    group_admin: panic-admins
