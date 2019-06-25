@@ -28,6 +28,12 @@
         - name: Put keytable in place
           command: mv /tmp/keytable /etc/krb5.keytab
 
+        - name: Set keytable permissions
+          file:
+            path: /etc/krb5.keytab
+            state: touch
+            mode: '0600'
+
       when: keytab_stat.stat.exists != true
 
     - name: Set up config file
