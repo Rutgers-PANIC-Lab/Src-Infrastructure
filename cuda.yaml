@@ -1,0 +1,23 @@
+- hosts: localhost
+  become: true
+
+  tasks:
+    - name: Install CUDA base installer
+      apt:
+        deb: "{{ cuda_deb_url }}"
+
+    - name: Add apt key for repo
+      apt_key:
+        url: "{{ cuda_key_url }}"
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install CUDA
+      apt:
+        name: cuda
+
+  vars:
+    cuda_deb_url: http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-repo-ubuntu1804_10.1.168-1_amd64.deb
+    cuda_key_url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
