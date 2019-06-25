@@ -2,6 +2,10 @@
   become: true
 
   tasks:
+    - name: add domain to hostname
+      when: not '.' in hostname
+      command: hostnamectl set-hostname {{ hostname }}.{{ hostname_domain }}
+
     # we assume that it is good if it is already in place
     - name: Check for existing keytable
       stat:
@@ -44,6 +48,7 @@
         line: "localhost nfsserver=true local_homedir=true grouplist=coresysadmins,{{ group }} sudogroups=slide,{{ group_admin }} net_autofs=true domain=cs.rutgers.edu"
   vars:
     server: services.cs.rutgers.edu
-    hostname: "{{ ansible_fqdn }}"
+    hostname: "{{ ansible_nodename }}"
     group: panic-users
     group_admin: panic-admins
+    hostname_domain: cs.rutgers.edu
