@@ -192,7 +192,7 @@
         build_dir: "{{ media_workspace }}/media_sdk_build"
 
     # set env vars
-    - name: Set the LIBVA environment variables system-wide
+    - name: Set system wide environment variables
       when: env_vars_set
       become: yes
       blockinfile:
@@ -201,6 +201,7 @@
         block: |
           LIBVA_DRIVERS_PATH=/usr/lib/x86_64-linux-gnu/dri
           LIBVA_DRIVER_NAME=iHD
+          LD_LIBRARY_PATH=/opt/intel/mediasdk/lib
         backup: yes
 
   vars:
