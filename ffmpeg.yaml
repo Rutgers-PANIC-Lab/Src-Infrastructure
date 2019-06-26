@@ -19,7 +19,7 @@
 
     # nvidia headers for ffmpeg
     - name: Install nvidia headers
-      when: nvidia_headers_install
+      when: nvidia_headers_install|bool
       block:
       - name: Check out nvidia headers
         git:
@@ -44,7 +44,7 @@
 
     # x264
     - name: Install x264
-      when: x264_install
+      when: x264_install|bool
       block:
         - name: Check out x264
           git:
@@ -73,7 +73,7 @@
 
     # ffmpeg
     - name: Install ffmpeg
-      when: ffmpeg_install
+      when: ffmpeg_install|bool
       block:
         - name: Check out ffmpeg
           git:
