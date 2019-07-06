@@ -1,0 +1,41 @@
+- hosts: localhost
+  become: true
+
+  tasks:
+    - name: Install Docker dependencies
+      apt:
+        name: "{{ packages }}"
+        update_cache: yes
+      vars:
+        packages:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg-agent
+          - software-properties-common
+
+    - name: Add Docker GNUpg Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    # based on github.com/rbq/docker.yml
+    # https://gist.github.com/rbq/886587980894e98b23d0eee2a1d84933
+    - name: Add Docker repo for {{ ansible_distribution_release }}
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+        state: present
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        update_cache: yes
+
+    - name: Install Docker Compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: 0755
+
+  vars:
+    docker_compose_version: 1.24.0
