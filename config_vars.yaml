@@ -1,0 +1,6 @@
+network_panic: 172.16.28.0
+network_parasol: 172.16.18.0
+group_panic: panic-users
+group_admin_panic: panic-admins
+group_parasol: parasol-users
+group_admin_parasol: parasol-admins

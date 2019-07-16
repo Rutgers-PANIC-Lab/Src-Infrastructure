@@ -1,0 +1,20 @@
+- name: Load config vars
+  include_vars:
+    file: config_vars.yaml
+
+- name: Check for Panic Network
+  set_fact:
+    group: "{{ group_panic }}"
+    group_admin: "{{ group_admin_panic }}"
+  when: ansible_default_ipv4.network == network_panic
+
+- name: Check for Parasol Network
+  set_fact:
+    group: "{{ group_parasol }}"
+    group_admin: "{{ group_admin_parasol }}"
+  when: ansible_default_ipv4.network == network_parasol
+
+- name: Fail if unknown network
+  fail:
+    msg: "This script only works on the Panic and Parasol subnets"
+  when: group is not defined

@@ -2,22 +2,9 @@
   become: true
 
   tasks:
-    - name: Check for Panic Network
-      set_fact:
-        group: "{{ group_panic }}"
-        group_admin: "{{ group_admin_panic }}"
-      when: ansible_default_ipv4.network == network_panic
-
-    - name: Check for Parasol Network
-      set_fact:
-        group: "{{ group_parasol }}"
-        group_admin: "{{ group_admin_parasol }}"
-      when: ansible_default_ipv4.network == network_parasol
-
-    - name: Fail if unknown network
-      fail:
-        msg: "This script only works on the Panic and Parasol subnets"
-      when: group is not defined
+    - name: Do config tasks
+      import_tasks:
+        file: config_tasks.yaml
 
     - name: add domain to hostname
       when: not '.' in hostname
@@ -66,10 +53,4 @@
   vars:
     server: services.cs.rutgers.edu
     hostname: "{{ ansible_nodename }}"
-    network_panic: 172.16.28.0
-    network_parasol: 172.16.18.0
-    group_panic: panic-users
-    group_admin_panic: panic-admins
-    group_parasol: parasol-users
-    group_admin_parasol: parasol-admins
     hostname_domain: cs.rutgers.edu
