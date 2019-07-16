@@ -4,6 +4,10 @@
     PATH: "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
 
   tasks:
+    - name: Do config tasks
+      import_tasks:
+        file: config_tasks.yaml
+
     - name: create /localhome directory
       file:
         path: "{{ local_home_dir }}"
@@ -26,9 +30,9 @@
       notify:
         - restart autofs
 
-    - name: auto.home
+    - name: auto.home.panic
       when: nocommonmap is not defined or not nocommonmap
-      template: src="{{ playbook_dir }}/autofs-files/etc/auto.master.d/auto.home" dest=/etc/auto.master.d/auto.home mode=644 owner=root
+      template: src="{{ playbook_dir }}/autofs-files/etc/auto.master.d/{{ auto_home_file }}" dest=/etc/auto.master.d/auto.home mode=644 owner=root
       notify:
         - restart autofs
 

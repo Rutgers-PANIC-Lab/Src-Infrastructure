@@ -6,12 +6,14 @@
   set_fact:
     group: "{{ group_panic }}"
     group_admin: "{{ group_admin_panic }}"
+    auto_home_file: "{{ auto_home_panic }}"
   when: ansible_default_ipv4.network == network_panic
 
 - name: Check for Parasol Network
   set_fact:
     group: "{{ group_parasol }}"
     group_admin: "{{ group_admin_parasol }}"
+    auto_home_file: "{{ auto_home_parasol }}"
   when: ansible_default_ipv4.network == network_parasol
 
 - name: Fail if unknown network

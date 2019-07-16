@@ -4,3 +4,5 @@ group_panic: panic-users
 group_admin_panic: panic-admins
 group_parasol: parasol-users
 group_admin_parasol: parasol-admins
+auto_home_panic: auto.home.panic
+auto_home_parasol: auto.home.parasol
