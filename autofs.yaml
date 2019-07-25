@@ -9,17 +9,14 @@
         file: config_tasks.yaml
 
     - name: autofs directory
-      when: nocommonmap is not defined or not nocommonmap
       file: path=/etc/auto.master.d mode=755 owner=root state=directory
 
     - name: home.autofs
-      when: nocommonmap is not defined or not nocommonmap
       template: src="{{ playbook_dir }}/autofs-files/etc/auto.master.d/home.autofs" dest=/etc/auto.master.d/home.autofs mode=644 owner=root
       notify:
         - restart autofs
 
     - name: auto.home.panic
-      when: nocommonmap is not defined or not nocommonmap
       template: src="{{ playbook_dir }}/autofs-files/etc/auto.master.d/{{ auto_home_file }}" dest=/etc/auto.master.d/auto.home mode=644 owner=root
       notify:
         - restart autofs
