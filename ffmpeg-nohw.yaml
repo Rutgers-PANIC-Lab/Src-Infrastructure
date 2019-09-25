@@ -1,0 +1,88 @@
+- hosts: localhost
+
+  tasks:
+    - name: Install dependencies
+      apt:
+        name: "{{ packages }}"
+      vars:
+        packages:
+          - autoconf
+          - libtool
+          - libdrm-dev
+          - nasm
+
+    - name: Create workspace dir
+      file:
+        path: "{{ ffmpeg_workspace }}"
+        state: directory
+        mode: u+rw,g+rw,o+rw
+
+    # x264
+    - name: Install x264
+      when: x264_install|bool
+      block:
+        - name: Check out x264
+          git:
+            repo: 'https://code.videolan.org/videolan/x264.git'
+            dest: "{{ src_dir }}"
+            version: stable
+
+        - name: Configure x264
+          command: ./configure --enable-static --enable-shared
+          args:
+            chdir: "{{ src_dir }}"
+
+        - name: Build x264
+          command: make {{ jarg }}
+          args:
+            chdir: "{{ src_dir }}"
+
+        - name: Install x264
+          command: make install
+          become: yes
+          args:
+            chdir: "{{ src_dir }}"
+
+      vars:
+        src_dir: "{{ ffmpeg_workspace }}/x264"
+
+    # ffmpeg
+    - name: Install ffmpeg
+      when: ffmpeg_install|bool
+      block:
+        - name: Check out ffmpeg
+          git:
+            repo: 'https://git.ffmpeg.org/ffmpeg.git'
+            dest: "{{ src_dir }}"
+            version: "{{ ffmpeg_version }}"
+
+        - name: Configure ffmpeg
+          command: ./configure --enable-nonfree --enable-gpl --enable-libx264
+          args:
+            chdir: "{{ src_dir }}"
+          environment:
+            PKG_CONFIG_PATH: /usr/local/lib:/opt/intel/mediasdk/lib/pkgconfig
+
+        - name: Build ffmpeg
+          command: make {{ jarg }}
+          args:
+            chdir: "{{ src_dir }}"
+
+        - name: Install ffmpeg
+          command: make install
+          become: yes
+          args:
+            chdir: "{{ src_dir }}"
+
+      vars:
+        src_dir: "{{ ffmpeg_workspace }}/ffmpeg"
+
+  vars:
+    jarg: -j9
+    ffmpeg_workspace: /tmp/ffmpeg_workspace
+
+    x264_version: stable
+    ffmpeg_version: n4.1.3
+
+    x264_install: true
+    ffmpeg_install: true
