@@ -65,7 +65,7 @@
         git:
           repo: 'https://github.com/intel/libva-utils.git'
           dest: "{{ src_dir }}"
-          version: "{{ libva_version }}"
+          version: "{{ libva_utils_version }}"
 
       - name: Configure libva_utils
         command: ./autogen.sh --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu
@@ -208,10 +208,11 @@
     media_workspace: /tmp/media_workspace
     jarg: -j9
 
-    libva_version: 2.4.1
-    gmmlib_version: intel-gmmlib-19.1.2
-    media_driver_version: intel-media-19.1.0
-    media_sdk_version: intel-mediasdk-19.1.0
+    libva_version: 2.6.0.pre1
+    libva_utils_version: 2.5.0
+    gmmlib_version: intel-gmmlib-19.3.1
+    media_driver_version: intel-media-19.3.0
+    media_sdk_version: intel-mediasdk-19.3.0
 
     libva_install: true
     gmmlib_install: true
