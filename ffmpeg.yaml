@@ -82,7 +82,7 @@
             version: "{{ ffmpeg_version }}"
 
         - name: Configure ffmpeg
-          command: ./configure --enable-cuda --enable-cuvid --enable-nvenc --enable-nonfree --enable-libnpp
+          command: ./configure --enable-cuda-sdk --enable-cuvid --enable-nvenc --enable-nonfree --enable-libnpp
             --enable-libmfx --enable-gpl --enable-libx264
             --extra-cflags=-I/usr/local/cuda/include --extra-ldflags=-L/usr/local/cuda/lib64
           args:
@@ -108,9 +108,9 @@
     jarg: -j9
     ffmpeg_workspace: /tmp/ffmpeg_workspace
 
-    nvidia_headers_version: n9.0.18.1
+    nvidia_headers_version: n9.1.23.0
     x264_version: stable
-    ffmpeg_version: n4.1.3
+    ffmpeg_version: n4.2.1
 
     nvidia_headers_install: true
     x264_install: true
