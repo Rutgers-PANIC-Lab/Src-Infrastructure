@@ -14,10 +14,10 @@ To deploy a new Panic or Parasol node, perform the following steps:
     - When the new system comes online, execute the following to install Ansible
     (Select "Yes" to restart services without asking, if prompted.)
     ```
-    sudo apt update
-    sudo apt install software-properties-common
-    sudo apt-add-repository --yes --update ppa:ansible/ansible
-    sudo apt install ansible
+    sudo apt update && \
+    sudo apt install --yes software-properties-common && \
+    sudo apt-add-repository --yes --update ppa:ansible/ansible && \
+    sudo apt install --yes ansible
     ```
     
     - Once ansible is installed, run the following commands (you can skip the ones that do not apply):
