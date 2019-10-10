@@ -68,6 +68,16 @@
           args:
             chdir: "{{ src_dir }}"
 
+        - name: Set system wide LD_LIBRARY_PATH for x264
+          become: yes
+          blockinfile:
+            path: /etc/profile.d/x264_libs.sh
+            create: yes
+            state: present
+            block: |
+              export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+            backup: yes
+
       vars:
         src_dir: "{{ ffmpeg_workspace }}/x264"
 
