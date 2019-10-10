@@ -193,16 +193,17 @@
         build_dir: "{{ media_workspace }}/media_sdk_build"
 
     # set env vars
-    - name: Set system wide environment variables
+    - name: Set system wide environment variables for media sdk
       when: env_vars_set|bool
       become: yes
       blockinfile:
-        path: /etc/environment
+        path: /etc/profile.d/intel-media-sdk.sh
+        create: yes
         state: present
         block: |
-          LIBVA_DRIVERS_PATH=/usr/lib/x86_64-linux-gnu/dri
-          LIBVA_DRIVER_NAME=iHD
-          LD_LIBRARY_PATH=/opt/intel/mediasdk/lib
+          export LIBVA_DRIVERS_PATH=/usr/lib/x86_64-linux-gnu/dri
+          export LIBVA_DRIVER_NAME=iHD
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH/opt/intel/mediasdk/lib
         backup: yes
 
   vars:
