@@ -82,7 +82,7 @@
     ffmpeg_workspace: /tmp/ffmpeg_workspace
 
     x264_version: stable
-    ffmpeg_version: n4.1.3
+    ffmpeg_version: n4.2.1
 
     x264_install: true
     ffmpeg_install: true
