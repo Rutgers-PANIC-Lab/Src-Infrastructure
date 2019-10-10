@@ -1,0 +1,15 @@
+- hosts: localhost
+  become: true
+
+  tasks:
+    - name: Set system wide environment variables for media sdk
+      become: yes
+      blockinfile:
+        path: /etc/profile.d/intel-media-sdk.sh
+        create: yes
+        state: present
+        block: |
+          export LIBVA_DRIVERS_PATH=/usr/lib/x86_64-linux-gnu/dri
+          export LIBVA_DRIVER_NAME=iHD
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH/opt/intel/mediasdk/lib
+        backup: yes
