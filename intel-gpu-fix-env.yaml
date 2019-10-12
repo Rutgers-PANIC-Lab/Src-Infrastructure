@@ -2,14 +2,24 @@
   become: true
 
   tasks:
-    - name: Set system wide environment variables for media sdk
+    - name: Remove unneeded env files
+      file:
+        path: "{{ item}}"
+        state: absent
+      with_items:
+        - /etc/profile.d/cuda-path.sh
+        - /etc/profile.d/x264_libs.sh
+        - /etc/profile.d/intel-media-sdk.sh
+
+    - name: Set system wide environment variables for media stuff
       become: yes
       blockinfile:
-        path: /etc/profile.d/intel-media-sdk.sh
+        path: /etc/profile.d/panic-video-libs.sh
         create: yes
         state: present
         block: |
           export LIBVA_DRIVERS_PATH=/usr/lib/x86_64-linux-gnu/dri
           export LIBVA_DRIVER_NAME=iHD
-          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH/opt/intel/mediasdk/lib
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/opt/intel/mediasdk/lib
+          export PATH=$PATH:/usr/local/cuda/bin
         backup: yes
