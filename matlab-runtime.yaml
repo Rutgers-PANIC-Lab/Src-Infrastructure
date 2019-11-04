@@ -1,0 +1,53 @@
+- hosts: localhost
+  become: true
+
+  tasks:
+    - name: Install dependencies
+      apt:
+        name: "{{ packages }}"
+      vars:
+        packages:
+          - unzip
+
+    - name: Download MATLAB Runtime
+      get_url:
+        url: "{{ matlab_runtime_url }}"
+        dest: /tmp
+      register: get_url_result
+
+    - name: Create MATLAB installer directory
+      file:
+        path: "{{ matlab_installer_path }}"
+        state: directory
+
+    - name: Extract MATLAB Runtime
+      unarchive:
+        src: "{{ get_url_result.dest }}"
+        dest: "{{ matlab_installer_path }}"
+
+    - name: Install MATLAB Runtime
+      command: ./install -mode silent -agreeToLicense yes -destinationFolder {{ matlab_install_path }}
+      args:
+        chdir: "{{ matlab_installer_path }}"
+
+    - name: Set LD_LIBRARY_PATH
+      blockinfile:
+        path: /etc/profile.d/matlab-runtime.sh
+        create: yes
+        state: present
+        block: |
+          export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:{{ matlab_full_path }}/runtime/glnxa64:{{ matlab_full_path }}/bin/glnxa64:mcrroot/sys/os/glnxa64:{{ matlab_full_path }}/sys/opengl/lib/glnxa64
+        backup: yes
+
+    - name: Remove MATLAB installer directory
+      file:
+        path: "{{ matlab_installer_path }}"
+        state: absent
+
+  vars:
+    matlab_runtime_version: R2019b
+    matlab_runtime_version_code: v97
+    matlab_runtime_url: http://ssd.mathworks.com/supportfiles/downloads/R2019b/Release/1/deployment_files/installer/complete/glnxa64/MATLAB_Runtime_R2019b_Update_1_glnxa64.zip
+    matlab_installer_path: /tmp/matlab_runtime_installer
+    matlab_install_path: /usr/local/MATLAB/Runtime-{{ matlab_runtime_version }}
+    matlab_full_path: "{{ matlab_install_path }}/{{ matlab_runtime_version_code }}"
