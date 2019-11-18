@@ -1,0 +1,10 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Update Kerberos settings
+      command: ansible-pull -f -U https://github.com/clhedrick/kerberos-ansible.git kerberos.yml
+      become: yes
+
+    - name: Reboot the machine
+      reboot:
