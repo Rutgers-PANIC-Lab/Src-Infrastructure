@@ -1,5 +1,10 @@
 all:
   children:
+    masters:
+      hosts:
+        parasol-master.cs.rutgers.edu:
+        panic-master.cs.rutgers.edu:
+
     parasol:
       children:
         parasol_edge_xe3:
