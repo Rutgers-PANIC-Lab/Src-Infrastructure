@@ -49,7 +49,7 @@
         path: /etc/ansible/hosts
         state: present
         create: yes
-        line: "localhost nfsserver=true local_homedir=true grouplist=coresysadmins,{{ group }} sudogroups=slide,{{ group_admin }} net_autofs=true domain=cs.rutgers.edu"
+        line: "localhost nfsserver=true local_homedir=true grouplist=coresysadmins,{{ group }} sudogroups=slide,{{ group_admin }} net_autofs=true domain=cs.rutgers.edu nocommonmkdir=true"
   vars:
     server: services.cs.rutgers.edu
     hostname: "{{ ansible_nodename }}"
