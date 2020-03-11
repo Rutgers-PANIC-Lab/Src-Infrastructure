@@ -27,7 +27,7 @@
     - name: Set system wide PATH
       become: yes
       blockinfile:
-        path: /etc/profile.d/cuda-path.sh
+        path: /etc/profile.d/panic-video-libs.sh
         create: yes
         state: present
         block: |

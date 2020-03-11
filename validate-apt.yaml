@@ -1,0 +1,17 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Clean apt cache
+      command: apt-get clean
+
+    - name: Install debsums
+      apt:
+        name: debsums
+        state: present
+
+    - name: init debsums
+      command: debsums_init
+
+    - name: check debsums
+      command: debsums -cs

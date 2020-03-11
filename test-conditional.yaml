@@ -1,0 +1,11 @@
+- hosts: localhost
+  become: true
+
+  tasks:
+    - name: Clean apt cache
+      command: apt-get clean
+      when: clean|bool and foo|bool
+
+  vars:
+    clean: false
+    foo: true

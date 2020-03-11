@@ -1,4 +1,5 @@
-- hosts: localhost
+- hosts: all
+  become: true
 
   tasks:
     - name: Install dependencies
@@ -19,7 +20,7 @@
 
     # nvidia headers for ffmpeg
     - name: Install nvidia headers
-      when: nvidia_headers_install|bool
+      when: cuda|bool and nvidia_headers_install|bool
       block:
       - name: Check out nvidia headers
         git:
@@ -80,10 +81,20 @@
             dest: "{{ src_dir }}"
             version: "{{ ffmpeg_version }}"
 
-        - name: Configure ffmpeg
+        - name: Configure ffmpeg (cuda)
+          when: cuda|bool
           command: ./configure --enable-cuda-sdk --enable-cuvid --enable-nvenc --enable-nonfree --enable-libnpp
             --enable-libmfx --enable-gpl --enable-libx264
             --extra-cflags=-I/usr/local/cuda/include --extra-ldflags=-L/usr/local/cuda/lib64
+          args:
+            chdir: "{{ src_dir }}"
+          environment:
+            PKG_CONFIG_PATH: /usr/local/lib:/opt/intel/mediasdk/lib/pkgconfig
+
+        - name: Configure ffmpeg (no cuda)
+          when: not cuda|bool
+          command: ./configure --enable-nonfree
+            --enable-libmfx --enable-gpl --enable-libx264
           args:
             chdir: "{{ src_dir }}"
           environment:
@@ -105,6 +116,7 @@
 
   vars:
     jarg: -j9
+    cuda: true
     ffmpeg_workspace: /tmp/ffmpeg_workspace
 
     #nvidia_headers_version: n9.1.23.0
