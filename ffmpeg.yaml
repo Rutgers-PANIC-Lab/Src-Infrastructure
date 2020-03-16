@@ -90,6 +90,7 @@
             chdir: "{{ src_dir }}"
           environment:
             PKG_CONFIG_PATH: /usr/local/lib:/opt/intel/mediasdk/lib/pkgconfig
+            PATH: "{{ ansible_env.PATH }}:/usr/local/cuda/bin"
 
         - name: Configure ffmpeg (no cuda)
           when: not cuda|bool
@@ -104,6 +105,8 @@
           command: make {{ jarg }}
           args:
             chdir: "{{ src_dir }}"
+          environment:
+            PATH: "{{ ansible_env.PATH }}:/usr/local/cuda/bin"
 
         - name: Install ffmpeg
           command: make install

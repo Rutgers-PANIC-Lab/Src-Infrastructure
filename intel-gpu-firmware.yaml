@@ -1,0 +1,9 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Update linux-firmware
+      apt:
+        name: linux-firmware
+        state: latest
+

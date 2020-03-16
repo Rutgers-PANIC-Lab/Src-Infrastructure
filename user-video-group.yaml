@@ -1,0 +1,10 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Add user {{ username }} to video group
+      user:
+        name: "{{ username }}"
+        groups: video
+        append: yes
+      when: username is defined

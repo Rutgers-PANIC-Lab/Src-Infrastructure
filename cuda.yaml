@@ -1,4 +1,4 @@
-- hosts: localhost
+- hosts: all
   become: true
 
   tasks:
@@ -23,6 +23,7 @@
     - name: Install CUDA
       apt:
         name: cuda
+        state: latest
 
     - name: Set system wide PATH
       become: yes
