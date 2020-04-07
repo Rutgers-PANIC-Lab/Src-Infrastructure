@@ -25,6 +25,12 @@
         name: cuda
         state: latest
 
+    - name: Add symbolic link
+      file:
+        src: /usr/local/cuda-10.2
+        dest: /usr/local/cuda
+        state: link
+
     - name: Set system wide PATH
       become: yes
       blockinfile:
