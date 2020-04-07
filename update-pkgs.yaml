@@ -1,0 +1,17 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Remove dependencies that are no longer required (with purge)
+      apt:
+        autoremove: yes
+        purge: yes
+
+    - name: Update all packages
+      apt:
+        update_cache: yes
+        name: "*"
+        state: latest
+
+    - name: Reboot the machine
+      reboot:
