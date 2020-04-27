@@ -13,9 +13,15 @@ all:
         parasol_edge_xe3nv:
           hosts:
             parasol-edge-xe3nv-[00:03].cs.rutgers.edu
+          vars:
+            cuda: true
         parasol_edge_xd:
           hosts:
             parasol-edge-xd-[00:07].cs.rutgers.edu
+        livestreaming_workers:
+          hosts:
+            parasol-edge-xe3-[05:07].cs.rutgers.edu:
+            parasol-edge-xe3nv-[00:03].cs.rutgers.edu:
 
     panic:
       children:
@@ -25,6 +31,8 @@ all:
         panic_cloud_gpu:
           hosts:
             panic-cloud-gpu-[00:02].cs.rutgers.edu
+          vars:
+            cuda: true
         panic_cloud_optane:
           hosts:
             panic-cloud-optane-[00:01].cs.rutgers.edu

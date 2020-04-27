@@ -192,19 +192,16 @@
         src_dir: "{{ media_workspace }}/media_sdk"
         build_dir: "{{ media_workspace }}/media_sdk_build"
 
-    # set env vars
-    - name: Set system wide environment variables for media stuff
-      become: yes
+    - name: Add media-sdk to ld.conf.d
       blockinfile:
-        path: /etc/profile.d/panic-video-libs.sh
+        path: /etc/ld.so.conf.d/intel-media-sdk.conf
         create: yes
         state: present
         block: |
-          export LIBVA_DRIVERS_PATH=/usr/lib/x86_64-linux-gnu/dri
-          export LIBVA_DRIVER_NAME=iHD
-          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/opt/intel/mediasdk/lib
-          export PATH=$PATH:/usr/local/cuda/bin
-        backup: yes
+          /opt/intel/mediasdk/lib
+
+    - name: Run ldconfig
+      command: ldconfig
 
   vars:
     media_workspace: /tmp/media_workspace

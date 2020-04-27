@@ -32,14 +32,12 @@
         state: link
 
     - name: Set system wide PATH
-      become: yes
       blockinfile:
-        path: /etc/profile.d/panic-video-libs.sh
+        path: /etc/profile.d/cuda-path.sh
         create: yes
         state: present
         block: |
           export PATH=$PATH:/usr/local/cuda/bin
-        backup: yes
 
   vars:
     cuda_pin_url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-ubuntu1804.pin
