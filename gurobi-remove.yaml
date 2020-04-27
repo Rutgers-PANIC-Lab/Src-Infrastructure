@@ -1,6 +1,8 @@
 - hosts: all
   become: true
 
+  vars_files: vars/gurobi.yaml
+
   tasks:
     - name: Find existing Gurobi installs
       find:
@@ -19,7 +21,3 @@
       file:
         path: "{{ PROFILE_FILE }}"
         state: absent
-
-  vars:
-    INSTALL_PATH: /opt
-    PROFILE_FILE: /etc/profile.d/gurobi.sh
