@@ -1,0 +1,25 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Find existing Gurobi installs
+      find:
+        paths: "{{ INSTALL_PATH }}"
+        patterns: "gurobi*"
+        file_type: directory
+      register: dirs_to_delete
+
+    - name: Remove existing Gurobi installs
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      with_items: "{{ dirs_to_delete.files }}"
+
+    - name: Remove existing profile script
+      file:
+        path: "{{ PROFILE_FILE }}"
+        state: absent
+
+  vars:
+    INSTALL_PATH: /opt
+    PROFILE_FILE: /etc/profile.d/gurobi.sh
