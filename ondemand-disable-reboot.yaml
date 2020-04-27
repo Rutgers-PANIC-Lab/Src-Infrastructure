@@ -1,0 +1,12 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Disable ondemand service
+      systemd:
+        name: ondemand
+        enabled: no
+
+    - name: Reboot machine
+      reboot:
+        msg: Rebooting now!

@@ -1,4 +1,4 @@
-- hosts: localhost
+- hosts: all
   become: true
 
   tasks:
@@ -8,6 +8,11 @@
       vars:
         packages:
           - unzip
+
+    - name: Remove existing MATLAB Runtime install
+      file:
+        path: "{{ matlab_install_path }}"
+        state: absent
 
     - name: Download MATLAB Runtime
       get_url:
@@ -24,6 +29,7 @@
       unarchive:
         src: "{{ get_url_result.dest }}"
         dest: "{{ matlab_installer_path }}"
+        remote_src: yes
 
     - name: Install MATLAB Runtime
       command: ./install -mode silent -agreeToLicense yes -destinationFolder {{ matlab_install_path }}
@@ -36,13 +42,25 @@
         create: yes
         state: present
         block: |
-          export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:{{ matlab_full_path }}/runtime/glnxa64:{{ matlab_full_path }}/bin/glnxa64:mcrroot/sys/os/glnxa64:{{ matlab_full_path }}/sys/opengl/lib/glnxa64
+          export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:{{ matlab_full_path }}/runtime/glnxa64:{{ matlab_full_path }}/bin/glnxa64:mcrroot/sys/os/glnxa64:{{ matlab_full_path }}/sys/opengl/lib/glnxa64
         backup: yes
 
     - name: Remove MATLAB installer directory
       file:
         path: "{{ matlab_installer_path }}"
         state: absent
+
+    #- name: Find MATLAB libexpat files
+    #  find:
+    #    paths: "{{ matlab_full_path }}"/bin/glnxa64"
+    #    patterns: libexpat.*
+    #  register: files_to_delete
+
+    #- name: Delete MATLAB libexpat files
+    #  file:
+    #    path: "{{ item.path }}"
+    #    state: absent
+    #  with_items: {{ files_to_delete.files }}
 
   vars:
     matlab_runtime_version: R2019b

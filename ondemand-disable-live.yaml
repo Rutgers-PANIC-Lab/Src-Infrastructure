@@ -1,0 +1,39 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Disable ondemand service
+      systemd:
+        name: ondemand
+        enabled: no
+
+    - name: Find sysfs cpu files
+      find:
+        paths: /sys/devices/system/cpu
+        patterns: "cpu[0-9]+"
+        use_regex: yes
+        file_type: directory
+      register: sysfs_cpu_dirs
+
+    - name: Get current governors
+      shell:
+        cmd: "cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor"
+      register: result
+
+    - name: Output current governors
+      debug:
+        msg: "{{ result.stdout }}"
+
+    - name: Set cpu governors to performance
+      shell:
+        cmd: "echo performance > {{ item.path }}/cpufreq/scaling_governor"
+      with_items: "{{ sysfs_cpu_dirs.files }}"
+
+    - name: Get resulting governors
+      shell:
+        cmd: "cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor"
+      register: result
+
+    - name: Output resulting governors
+      debug:
+        msg: "{{ result.stdout }}"
