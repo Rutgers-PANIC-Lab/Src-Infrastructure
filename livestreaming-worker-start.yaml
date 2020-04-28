@@ -1,0 +1,11 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Start livestreaming worker services
+      systemd:
+        name: "{{ item }}"
+        state: started
+      with_items:
+        - livestreaming-node
+        - livestreaming-streamgen

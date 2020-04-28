@@ -1,0 +1,11 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Stop livestreaming worker services
+      systemd:
+        name: "{{ items }}"
+        state: stopped
+      with_items:
+        - livestreaming-node
+        - livestreaming-streamgen

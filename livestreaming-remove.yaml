@@ -1,0 +1,42 @@
+- hosts: all
+  become: true
+
+  vars_files: vars/livestreaming.yaml
+
+  tasks:
+    - name: Stop services
+      systemd:
+        name: "{{ item }}"
+        state: stopped
+      ignore_errors: yes
+      with_items:
+        - livestreaming-node
+        - livestreaming-streamgen
+
+
+    - name: Find existing service files
+      find:
+        paths: /etc/systemd/system
+        patterns: "livestreaming-*.service"
+        file_type: file
+      register: files_to_delete
+
+    - name: Drop existing service files
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      with_items: "{{ files_to_delete.files }}"
+
+    - name: Reload systemd
+      systemd:
+        daemon_reload: yes
+
+    - name: Remove environment file
+      file:
+        name: "{{ LIVESTREAMING_ENVIRONMENT_FILE }}"
+        state: absent
+
+    - name: Remove install directory
+      file:
+        name: "{{ LIVESTREAMING_INSTALL_DIR }}"
+        state: absent

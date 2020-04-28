@@ -1,0 +1,46 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Find leftover env scripts
+      find:
+        paths: /etc/profile.d
+        patterns: "*~"
+        file_type: file
+      register: files_to_delete
+
+    - name: Remove leftover env scripts
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      with_items: "{{ files_to_delete.files }}"
+
+    - name: Remove specific env scripts
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - /etc/profile.d/cuda-path.sh
+        - /etc/profile.d/x264_libs.sh
+        - /etc/profile.d/intel-media-sdk.sh
+        - /etc/profile.d/panic-video-libs.sh
+
+    - name: Set system wide PATH for CUDA
+      blockinfile:
+        path: /etc/profile.d/cuda-path.sh
+        create: yes
+        state: present
+        block: |
+          export PATH=$PATH:/usr/local/cuda/bin
+      when: cuda is defined and cuda|bool
+
+    - name: Add intel-media-sdk to ld.so.conf.d
+      blockinfile:
+        path: /etc/ld.so.conf.d/intel-media-sdk.conf
+        create: yes
+        state: present
+        block: |
+          /opt/intel/mediasdk/lib
+
+    - name: Run ldconfig
+      command: ldconfig
