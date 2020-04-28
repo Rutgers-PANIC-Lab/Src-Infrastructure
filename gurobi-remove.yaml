@@ -6,7 +6,7 @@
   tasks:
     - name: Find existing Gurobi installs
       find:
-        paths: "{{ INSTALL_PATH }}"
+        paths: "{{ GUROBI_INSTALL_BASE }}"
         patterns: "gurobi*"
         file_type: directory
       register: dirs_to_delete
@@ -19,5 +19,5 @@
 
     - name: Remove existing profile script
       file:
-        path: "{{ PROFILE_FILE }}"
+        path: "{{ GUROBI_PROFILE_FILE }}"
         state: absent

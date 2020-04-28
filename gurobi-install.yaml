@@ -17,13 +17,13 @@
     - name: Extract Gurobi archive
       unarchive:
         src: "{{ download.dest }}"
-        dest: "{{ INSTALL_PATH }}"
+        dest: "{{ GUROBI_INSTALL_BASE }}"
         remote_src: yes
 
     - name: Set system wide PATH
       become: yes
       blockinfile:
-        path: "{{ PROFILE_FILE }}"
+        path: "{{ GUROBI_PROFILE_FILE }}"
         create: yes
         state: present
         block: |
