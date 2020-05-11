@@ -13,7 +13,6 @@
         - livestreaming-node
         - livestreaming-streamgen
 
-
     - name: Find existing service files
       find:
         paths: /etc/systemd/system
