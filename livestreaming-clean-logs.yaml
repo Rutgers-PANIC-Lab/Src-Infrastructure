@@ -1,0 +1,16 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Find livestreaming logs
+      find:
+        paths: /var/log/livestreaming
+        patterns: "*.log"
+        file_type: file
+      register: log_files
+
+    - name: Delete livestreaming logs
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      with_items: "{{ log_files.files }}"

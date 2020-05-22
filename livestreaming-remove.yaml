@@ -1,18 +1,12 @@
+- name: Stop worker services
+  import_playbook: livestreaming-worker-stop.yaml
+
 - hosts: all
   become: true
 
   vars_files: vars/livestreaming.yaml
 
   tasks:
-    - name: Stop services
-      systemd:
-        name: "{{ item }}"
-        state: stopped
-      ignore_errors: yes
-      with_items:
-        - livestreaming-node
-        - livestreaming-streamgen
-
     - name: Find existing service files
       find:
         paths: /etc/systemd/system

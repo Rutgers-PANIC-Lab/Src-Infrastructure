@@ -1,0 +1,15 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Install packages
+      apt:
+        name: "{{ packages }}"
+      vars:
+        packages:
+          - powertop
+          - smartmontools
+          - unzip
+          - tree
+          - wakeonlan
+          - httpie

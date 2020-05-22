@@ -4,7 +4,7 @@
   tasks:
     - name: Stop livestreaming worker services
       systemd:
-        name: "{{ items }}"
+        name: "{{ item }}"
         state: stopped
       with_items:
         - livestreaming-node

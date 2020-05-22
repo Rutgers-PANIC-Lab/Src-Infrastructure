@@ -6,4 +6,10 @@
       systemd:
         name: kubelet
         state: stopped
-        ignore_errors: yes
+      ignore_errors: yes
+
+    - name: stop httpserver service
+      systemd:
+        name: httpserver
+        state: stopped
+      ignore_errors: yes

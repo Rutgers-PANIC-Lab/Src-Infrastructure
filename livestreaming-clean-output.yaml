@@ -1,0 +1,16 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Find output files
+      find:
+        paths: /tmp
+        patterns: "*.mov"
+        file_type: file
+      register: output_files
+
+    - name: Delete output files
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      with_items: "{{ output_files.files }}"
