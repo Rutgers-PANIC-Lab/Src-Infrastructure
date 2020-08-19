@@ -11,6 +11,6 @@
 
     - name: Delete livestreaming logs
       file:
-        path: "{{ item.path }}"
+        path: "{{ item.path }}"https://192.168.1.1/firewall_nat.php
         state: absent
       with_items: "{{ log_files.files }}"
