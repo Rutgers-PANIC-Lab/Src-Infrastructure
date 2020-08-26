@@ -10,6 +10,8 @@ all:
         parasol_edge_xe3:
           hosts:
             parasol-edge-xe3-[00:07].cs.rutgers.edu:
+          vars:
+            cuda: false
         parasol_edge_xe3nv:
           hosts:
             parasol-edge-xe3nv-[00:03].cs.rutgers.edu:

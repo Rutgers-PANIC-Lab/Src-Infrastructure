@@ -1,0 +1,118 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Install dependencies
+      apt:
+        name: "{{ packages }}"
+      vars:
+        packages:
+          - autoconf
+          - libtool
+          - libdrm-dev
+          - nasm
+          - cmake
+          - cmake-curses-gui
+          - build-essential
+          - mercurial
+
+    - name: Clean workspace dir
+      file:
+        path: "{{ ffmpeg_workspace }}"
+        state: absent
+
+    - name: Create workspace dir
+      file:
+        path: "{{ ffmpeg_workspace }}"
+        state: directory
+        mode: u+rw,g+rw,o+rw
+
+    # x265
+    - name: Install x265
+      when: x265_install|bool
+      block:
+        - name: Check out x265
+          throttle: 1
+          hg:
+            repo: 'http://hg.videolan.org/x265'
+            dest: "{{ src_dir }}"
+            revision: "{{ x265_version }}"
+
+        - name: Make x265 makefiles (configure)
+          command: 'cmake -G "Unix Makefiles" ../../source'
+          args:
+            chdir: "{{ src_dir }}/build/linux"
+
+        - name: Build x265
+          command: make {{ jarg }}
+          args:
+            chdir: "{{ src_dir }}/build/linux"
+
+        - name: Install x265
+          command: make install
+          become: yes
+          args:
+            chdir: "{{ src_dir }}/build/linux"
+
+      vars:
+        src_dir: "{{ ffmpeg_workspace }}/x265"
+
+    # ffmpeg
+    - name: Install ffmpeg
+      when: ffmpeg_install|bool
+      block:
+        - name: Check out ffmpeg
+          git:
+            repo: 'https://git.ffmpeg.org/ffmpeg.git'
+            dest: "{{ src_dir }}"
+            version: "{{ ffmpeg_version }}"
+
+        - name: Configure ffmpeg (cuda)
+          when: cuda|bool
+          command: ./configure --enable-cuda-sdk --enable-cuvid --enable-nvenc --enable-nonfree --enable-libnpp
+            --enable-libmfx --enable-gpl --enable-libx264 --enable-libx265
+            --extra-cflags=-I/usr/local/cuda/include --extra-ldflags=-L/usr/local/cuda/lib64
+          args:
+            chdir: "{{ src_dir }}"
+          environment:
+            PKG_CONFIG_PATH: /usr/local/lib:/opt/intel/mediasdk/lib/pkgconfig
+            PATH: "{{ ansible_env.PATH }}:/usr/local/cuda/bin"
+
+        - name: Configure ffmpeg (no cuda)
+          when: not cuda|bool
+          command: ./configure --enable-nonfree
+            --enable-libmfx --enable-gpl --enable-libx264 --enable-libx265
+          args:
+            chdir: "{{ src_dir }}"
+          environment:
+            PKG_CONFIG_PATH: /usr/local/lib:/opt/intel/mediasdk/lib/pkgconfig
+
+        - name: Build ffmpeg
+          command: make {{ jarg }}
+          args:
+            chdir: "{{ src_dir }}"
+          environment:
+            PATH: "{{ ansible_env.PATH }}:/usr/local/cuda/bin"
+
+        - name: Install ffmpeg
+          command: make install
+          become: yes
+          args:
+            chdir: "{{ src_dir }}"
+
+      vars:
+        src_dir: "{{ ffmpeg_workspace }}/ffmpeg"
+
+    - name: Run ldconfig
+      command: ldconfig
+      become: yes
+
+  vars:
+    jarg: -j9
+    ffmpeg_workspace: /tmp/ffmpeg_workspace
+
+    x265_version: "3.4"
+    ffmpeg_version: "n4.2.2"
+
+    x265_install: true
+    ffmpeg_install: true
