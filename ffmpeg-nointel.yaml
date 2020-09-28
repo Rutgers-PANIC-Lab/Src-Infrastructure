@@ -1,0 +1,164 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Install dependencies
+      apt:
+        name: "{{ packages }}"
+      vars:
+        packages:
+          - autoconf
+          - libtool
+          - libdrm-dev
+          - nasm
+
+    - name: Create workspace dir
+      file:
+        path: "{{ ffmpeg_workspace }}"
+        state: directory
+        mode: u+rw,g+rw,o+rw
+
+    # nvidia headers for ffmpeg
+    - name: Install nvidia headers
+      when: cuda|bool and nvidia_headers_install|bool
+      block:
+      - name: Check out nvidia headers
+        git:
+          repo: 'https://git.videolan.org/git/ffmpeg/nv-codec-headers.git'
+          dest: "{{ src_dir }}"
+          version: "{{ nvidia_headers_version }}"
+
+      - name: Make nvidia headers
+        command: make
+        args:
+          chdir: "{{ src_dir }}"
+
+      - name: Install nvidia headers
+        command: make install
+        become: yes
+        args:
+          chdir: "{{ src_dir }}"
+
+      vars:
+        src_dir: "{{ ffmpeg_workspace }}/nv-codec-headers"
+
+    # x264
+    - name: Install x264
+      when: x264_install|bool
+      block:
+        - name: Check out x264
+          git:
+            repo: 'https://code.videolan.org/videolan/x264.git'
+            dest: "{{ src_dir }}"
+            version: stable
+
+        - name: Configure x264
+          command: ./configure --enable-static --enable-shared
+          args:
+            chdir: "{{ src_dir }}"
+
+        - name: Build x264
+          command: make {{ jarg }}
+          args:
+            chdir: "{{ src_dir }}"
+
+        - name: Install x264
+          command: make install
+          become: yes
+          args:
+            chdir: "{{ src_dir }}"
+
+      vars:
+        src_dir: "{{ ffmpeg_workspace }}/x264"
+
+    # x265
+    - name: Install x265
+      when: x265_install|bool
+      block:
+        - name: Check out x265
+          throttle: 1
+          hg:
+            repo: 'http://hg.videolan.org/x265'
+            dest: "{{ src_dir }}"
+            revision: "{{ x265_version }}"
+
+        - name: Make x265 makefiles (configure)
+          command: 'cmake -G "Unix Makefiles" ../../source'
+          args:
+            chdir: "{{ src_dir }}/build/linux"
+
+        - name: Build x265
+          command: make {{ jarg }}
+          args:
+            chdir: "{{ src_dir }}/build/linux"
+
+        - name: Install x265
+          command: make install
+          become: yes
+          args:
+            chdir: "{{ src_dir }}/build/linux"
+
+      vars:
+        src_dir: "{{ ffmpeg_workspace }}/x265"
+
+    # ffmpeg
+    - name: Install ffmpeg
+      when: ffmpeg_install|bool
+      block:
+        - name: Check out ffmpeg
+          git:
+            repo: 'https://git.ffmpeg.org/ffmpeg.git'
+            dest: "{{ src_dir }}"
+            version: "{{ ffmpeg_version }}"
+
+        - name: Configure ffmpeg (cuda)
+          when: cuda|bool
+          command: ./configure --enable-cuda-sdk --enable-cuvid --enable-nvenc --enable-nonfree --enable-libnpp
+            --enable-gpl --enable-libx264 --enable-libx265
+            --extra-cflags=-I/usr/local/cuda/include --extra-ldflags=-L/usr/local/cuda/lib64
+          args:
+            chdir: "{{ src_dir }}"
+          environment:
+            PKG_CONFIG_PATH: /usr/local/lib
+            PATH: "{{ ansible_env.PATH }}:/usr/local/cuda/bin"
+
+        - name: Configure ffmpeg (no cuda)
+          when: not cuda|bool
+          command: ./configure --enable-nonfree
+            --enable-gpl --enable-libx264 --enable-libx265
+          args:
+            chdir: "{{ src_dir }}"
+          environment:
+            PKG_CONFIG_PATH: /usr/local/lib
+
+        - name: Build ffmpeg
+          command: make {{ jarg }}
+          args:
+            chdir: "{{ src_dir }}"
+          environment:
+            PATH: "{{ ansible_env.PATH }}:/usr/local/cuda/bin"
+
+        - name: Install ffmpeg
+          command: make install
+          become: yes
+          args:
+            chdir: "{{ src_dir }}"
+
+      vars:
+        src_dir: "{{ ffmpeg_workspace }}/ffmpeg"
+
+  vars:
+    jarg: -j9
+    cuda: true
+    ffmpeg_workspace: /tmp/ffmpeg_workspace
+
+    nvidia_headers_version: n9.1.23.1
+    #nvidia_headers_version: n9.0.18.2
+    x264_version: stable
+    x265_version: "3.4"
+    ffmpeg_version: n4.2.2
+
+    nvidia_headers_install: true
+    x264_install: true
+    x265_install: true
+    ffmpeg_install: true
