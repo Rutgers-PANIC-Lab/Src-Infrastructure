@@ -11,4 +11,3 @@
 
     - name: Update GRUB
       command: update-grub
-

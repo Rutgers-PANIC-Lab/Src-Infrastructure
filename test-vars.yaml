@@ -1,0 +1,16 @@
+- hosts: localhost
+  become: true
+
+  tasks:
+    - name: Set Nvidia flags
+      set_fact:
+        nvidia_flags: "nvidia"
+      when: cuda|bool
+
+    - name: Set Intel flags
+      set_fact:
+        intel_flags: "intel"
+      when: qsv|bool
+
+    - name: Output
+      shell: "echo run {{nvidia_flags|default('')}} {{intel_flags|default('')}} > /tmp/output"

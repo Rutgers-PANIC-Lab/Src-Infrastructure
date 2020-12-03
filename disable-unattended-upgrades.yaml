@@ -1,0 +1,9 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Remove unattended-upgrades
+      apt:
+        name: unattended-upgrades
+        state: absent
+        purge: yes

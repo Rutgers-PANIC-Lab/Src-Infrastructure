@@ -1,0 +1,40 @@
+- hosts: all
+  become: true
+
+  vars_files: vars/livestreaming.yaml
+
+  tasks:
+    - name: Install dependencies
+      apt:
+        name: "{{ packages }}"
+      vars:
+        packages:
+          - python3-pip
+          - virtualenv
+
+    - name: Copy key file
+      copy:
+        src: /home/wkatsak/Src-Livestreaming/ssh/id_rsa
+        dest: /tmp/id_rsa
+        mode: '0600'
+
+    - name: Clone repo
+      git:
+        repo: git@github.com:Rutgers-PANIC-Lab/Src-Livestreaming.git
+        dest: "{{ LIVESTREAMING_INSTALL_DIR }}"
+        accept_hostkey: yes
+        key_file: /tmp/id_rsa
+
+    - name: Delete key file
+      file:
+        name: /tmp/id_rsa
+        state: absent
+
+    - name: Create virtualenv
+      command: virtualenv -p python3 {{ LIVESTREAMING_VENV_DIR }}
+
+    - name: Install requirements
+      command: "{{ LIVESTREAMING_PYTHON_BIN }} -m pip install -r {{ LIVESTREAMING_INSTALL_DIR }}/requirements.txt"
+
+    - name: Install py-rapl
+      command: "{{ LIVESTREAMING_PYTHON_BIN }} -m pip install git+https://github.com/wkatsak/py-rapl"

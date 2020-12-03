@@ -1,0 +1,8 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Disable ondemand service
+      systemd:
+        name: ondemand
+        enabled: no

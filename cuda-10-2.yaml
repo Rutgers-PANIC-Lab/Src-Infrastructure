@@ -23,14 +23,18 @@
           apt:
             update_cache: yes
 
-        - name: Install CUDA
+        - name: Install CUDA 10.2
           apt:
-            name: cuda
+            name: "{{ packages }}"
             state: latest
+          vars:
+            packages:
+              - cuda-drivers-440
+              - cuda-toolkit-10-2
 
         - name: Add symbolic link
           file:
-            src: /usr/local/cuda-11.1
+            src: /usr/local/cuda-10.2
             dest: /usr/local/cuda
             state: link
 
