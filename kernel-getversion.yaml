@@ -1,0 +1,6 @@
+- hosts: all
+  become: false
+
+  tasks:
+    - name: Get uname info
+      command: uname -a
