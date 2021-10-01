@@ -10,9 +10,9 @@
           - unzip
           - libxt6
 
-    - name: Remove existing MATLAB Runtime install
+    - name: Remove any existing MATLAB Runtime installs
       file:
-        path: "{{ matlab_install_path }}"
+        path: "{{ matlab_install_path_prefix }}"
         state: absent
 
     - name: Download MATLAB Runtime
@@ -64,9 +64,10 @@
     #  with_items: {{ files_to_delete.files }}
 
   vars:
-    matlab_runtime_version: R2019b
-    matlab_runtime_version_code: v97
-    matlab_runtime_url: http://ssd.mathworks.com/supportfiles/downloads/R2019b/Release/1/deployment_files/installer/complete/glnxa64/MATLAB_Runtime_R2019b_Update_1_glnxa64.zip
+    matlab_runtime_version: R2021a
+    matlab_runtime_version_code: v910
+    matlab_runtime_url: https://ssd.mathworks.com/supportfiles/downloads/R2021a/Release/0/deployment_files/installer/complete/glnxa64/MATLAB_Runtime_R2021a_glnxa64.zip
     matlab_installer_path: /tmp/matlab_runtime_installer
-    matlab_install_path: /usr/local/MATLAB/Runtime-{{ matlab_runtime_version }}
+    matlab_install_path_prefix: /usr/local/MATLAB/Runtime
+    matlab_install_path: "{{matlab_install_path_prefix}}/{{ matlab_runtime_version }}"
     matlab_full_path: "{{ matlab_install_path }}/{{ matlab_runtime_version_code }}"

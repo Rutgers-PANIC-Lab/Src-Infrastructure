@@ -30,7 +30,7 @@
 
         - name: Add symbolic link
           file:
-            src: /usr/local/cuda-11.1
+            src: /usr/local/cuda-11
             dest: /usr/local/cuda
             state: link
 

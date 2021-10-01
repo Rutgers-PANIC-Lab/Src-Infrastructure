@@ -41,12 +41,12 @@ all:
         livestreaming_workers:
           hosts:
             parasol-edge-xe3-[00:07].cs.rutgers.edu:
-            parasol-edge-xe3nv-[00:03].cs.rutgers.edu:
+            parasol-edge-xe3nv-[00:02].cs.rutgers.edu:
             parasol-edge-xd-[00:07].cs.rutgers.edu:
 
         livestreaming_scheduler:
           hosts:
-            panic-cloud-00.cs.rutgers.edu:
+            panic-cloud-05.cs.rutgers.edu:
 
         livestreaming_big:
           children:

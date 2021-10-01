@@ -193,10 +193,10 @@
     jarg: -j9
     ffmpeg_workspace: /tmp/ffmpeg_workspace
 
-    nvidia_headers_version: n11.0.10.0
+    nvidia_headers_version: n11.1.5.0
     x264_version: stable
-    x265_version: "3.4"
-    ffmpeg_version: n4.3.1
+    x265_version: "Release_3.5"
+    ffmpeg_version: n4.4
 
     nvidia_headers_install: true
     x264_install: true
