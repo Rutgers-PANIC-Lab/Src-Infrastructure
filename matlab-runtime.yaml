@@ -43,7 +43,7 @@
         create: yes
         state: present
         block: |
-          export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:{{ matlab_full_path }}/runtime/glnxa64:{{ matlab_full_path }}/bin/glnxa64:mcrroot/sys/os/glnxa64:{{ matlab_full_path }}/sys/opengl/lib/glnxa64
+          export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:{{ matlab_full_path }}/runtime/glnxa64:{{ matlab_full_path }}/bin/glnxa64:{{ matlab_full_path }}/sys/os/glnxa64:{{ matlab_full_path }}/sys/opengl/lib/glnxa64
         backup: yes
 
     - name: Remove MATLAB installer directory
