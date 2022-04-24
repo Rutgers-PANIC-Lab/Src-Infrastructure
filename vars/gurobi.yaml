@@ -1,6 +1,6 @@
 GUROBI_INSTALL_BASE: /opt
-GUROBI_TAR_URL: https://packages.gurobi.com/9.0/gurobi9.0.2_linux64.tar.gz
-GUROBI_TAR_CHECKSUM: "md5:cf8222318775f9ee58205bbb0ca0f1b5"
-GUROBI_VER: gurobi902
+GUROBI_TAR_URL: https://packages.gurobi.com/9.1/gurobi9.1.2_linux64.tar.gz
+GUROBI_TAR_CHECKSUM: "md5:022f454faaa37207b3f2526a1abf928f"
+GUROBI_VER: gurobi912
 GUROBI_INSTALL_DIR: "{{ GUROBI_INSTALL_BASE }}/{{ GUROBI_VER }}/linux64"
 GUROBI_PROFILE_FILE: /etc/profile.d/gurobi.sh

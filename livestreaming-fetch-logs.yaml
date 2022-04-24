@@ -1,11 +1,17 @@
 - hosts: all
   become: true
 
+  vars_files: vars/livestreaming.yaml
+
   tasks:
     - name: Find livestreaming logs
       find:
         paths: /var/log/livestreaming
-        patterns: "*.log"
+        patterns:
+          - "*-node-*.log"
+          - "*-scheduler-*.log"
+        excludes:
+          - "trace-log-default*.log"
         file_type: file
       register: log_files
 
@@ -17,4 +23,4 @@
       with_items: "{{ log_files.files }}"
 
   vars:
-    DEST_DIR: /home/wkatsak/Src-Livestreaming/logs/
+    DEST_DIR: "{{ LIVESTREAMING_LOCAL_PATH }}/logs/"

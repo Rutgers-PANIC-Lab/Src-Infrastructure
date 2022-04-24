@@ -4,7 +4,9 @@
 - hosts: all
   become: true
 
-  vars_files: vars/livestreaming.yaml
+  vars_files:
+    - vars/livestreaming.yaml
+    - vars/python.yaml
 
   tasks:
     - name: Install dependencies
@@ -34,13 +36,26 @@
         state: absent
 
     - name: Create virtualenv
-      command: virtualenv -p python3 {{ LIVESTREAMING_VENV_DIR }}
+      command: virtualenv -p {{ PYTHON_BIN }} {{ LIVESTREAMING_VENV_DIR }}
+      environment:
+        LD_LIBRARY_PATH: "{{ PYTHON_INSTALL_DIR }}/lib"
 
     - name: Install requirements
       command: "{{ LIVESTREAMING_PYTHON_BIN }} -m pip install -r {{ LIVESTREAMING_INSTALL_DIR }}/requirements.txt"
+      environment:
+        LD_LIBRARY_PATH: "{{ PYTHON_INSTALL_DIR }}/lib"
 
     - name: Install py-rapl
       command: "{{ LIVESTREAMING_PYTHON_BIN }} -m pip install git+https://github.com/wkatsak/py-rapl"
+      environment:
+        LD_LIBRARY_PATH: "{{ PYTHON_INSTALL_DIR }}/lib"
+
+    - name: Install matlab_model_utilties package
+      command: "{{ LIVESTREAMING_PYTHON_BIN }} setup.py install"
+      args:
+        chdir: "{{ LIVESTREAMING_INSTALL_DIR }}/matlab_scripts/python_binding"
+      environment:
+        LD_LIBRARY_PATH: "{{ PYTHON_INSTALL_DIR }}/lib"
 
     - name: Install service unit files
       copy:
@@ -57,23 +72,30 @@
 
     - name: Install default environment file
       copy:
-        src: "{{ LIVESTREAMING_INSTALL_DIR }}/systemd/configs/livestreaming-default"
+        src: "{{ LIVESTREAMING_INSTALL_DIR }}/systemd/configs/worker-default"
         dest: "{{ LIVESTREAMING_ENVIRONMENT_FILE}}"
         remote_src: yes
 
-    - name: "Install qsv environment file"
+    - name: "Install xe3 environment file"
       copy:
-        src: "{{ LIVESTREAMING_INSTALL_DIR }}/systemd/configs/livestreaming-qsv"
+        src: "{{ LIVESTREAMING_INSTALL_DIR }}/systemd/configs/worker-xe3"
         dest: "{{ LIVESTREAMING_ENVIRONMENT_FILE }}"
         remote_src: yes
       when: "'parasol_edge_xe3' in group_names"
 
-    - name: "Install qsv/nv environment file"
+    - name: "Install xe3nv environment file"
       copy:
-        src: "{{ LIVESTREAMING_INSTALL_DIR }}/systemd/configs/livestreaming-qsv-nv"
+        src: "{{ LIVESTREAMING_INSTALL_DIR }}/systemd/configs/worker-xe3nv"
         dest: "{{ LIVESTREAMING_ENVIRONMENT_FILE}}"
         remote_src: yes
       when: "'parasol_edge_xe3nv' in group_names"
+
+    - name: "Install xd environment file"
+      copy:
+        src: "{{ LIVESTREAMING_INSTALL_DIR }}/systemd/configs/worker-xd"
+        dest: "{{ LIVESTREAMING_ENVIRONMENT_FILE}}"
+        remote_src: yes
+      when: "'parasol_edge_xd' in group_names"
 
     - name: Create log directory
       file:

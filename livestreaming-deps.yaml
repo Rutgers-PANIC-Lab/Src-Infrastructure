@@ -1,7 +1,9 @@
 - hosts: all
   become: true
 
-  vars_files: vars/livestreaming.yaml
+  vars_files:
+    - vars/livestreaming.yaml
+    - vars/python.yaml
 
   tasks:
     - name: Install dependencies
@@ -38,3 +40,10 @@
 
     - name: Install py-rapl
       command: "{{ LIVESTREAMING_PYTHON_BIN }} -m pip install git+https://github.com/wkatsak/py-rapl"
+
+    - name: Install matlab_model_utilties package
+      command: "{{ LIVESTREAMING_PYTHON_BIN }} setup.py install"
+      args:
+        chdir: "{{ LIVESTREAMING_INSTALL_DIR }}/matlab_scripts/python_binding"
+      environment:
+        LD_LIBRARY_PATH: "{{ PYTHON_INSTALL_DIR }}/lib"

@@ -4,14 +4,19 @@
   vars_files:
     - vars/livestreaming.yaml
     - vars/gurobi.yaml
+    - vars/python.yaml
 
   tasks:
     - name: Install matlab_model_utilties package
       command: "{{ LIVESTREAMING_PYTHON_BIN }} setup.py install"
       args:
         chdir: "{{ LIVESTREAMING_INSTALL_DIR }}/matlab_scripts/python_binding"
+      environment:
+        LD_LIBRARY_PATH: "{{ PYTHON_INSTALL_DIR }}/lib"
 
     - name: Install Gurobi Python Binding
       command: "{{ LIVESTREAMING_PYTHON_BIN }} setup.py install"
       args:
         chdir: "{{ GUROBI_INSTALL_DIR }}"
+      environment:
+        LD_LIBRARY_PATH: "{{ PYTHON_INSTALL_DIR }}/lib"
