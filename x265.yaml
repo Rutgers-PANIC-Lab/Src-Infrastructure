@@ -112,7 +112,7 @@
     ffmpeg_workspace: /tmp/ffmpeg_workspace
 
     x265_version: "3.4"
-    ffmpeg_version: "n4.2.2"
+    ffmpeg_version: "n5.0.1"
 
     x265_install: true
     ffmpeg_install: true

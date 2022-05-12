@@ -215,11 +215,11 @@
     media_workspace: /tmp/media_workspace
     jarg: -j9
 
-    libva_version: 2.12.0
-    libva_utils_version: 2.12.0
-    gmmlib_version: intel-gmmlib-21.2.1
-    media_driver_version: intel-media-21.2.3
-    media_sdk_version: intel-mediasdk-21.2.3
+    libva_version: 2.14.0
+    libva_utils_version: 2.14.0
+    gmmlib_version: intel-gmmlib-22.1.2
+    media_driver_version: intel-media-22.3.1
+    media_sdk_version: intel-mediasdk-22.3.0
 
     libva_install: true
     gmmlib_install: true
