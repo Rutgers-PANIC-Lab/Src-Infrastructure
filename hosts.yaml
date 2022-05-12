@@ -62,3 +62,9 @@ all:
                 panic-cloud-optane-00.cs.rutgers.edu:
               vars:
                 cuda: false
+  vars:
+    ansible_ssh_user: localadmin
+    ansible_ssh_pass: replace_me
+    ansible_sudo_pass: "{{ansible_ssh_pass}}"
+    ansible_ssh_timeout: 60
+    ansible_ssh_retries: 5
