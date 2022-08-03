@@ -146,21 +146,6 @@
             dest: "{{ src_dir }}"
             version: "{{ ffmpeg_version }}"
 
-        - name: Update nvidia compute strings
-          when: cuda|default('false')|bool
-          block:
-            - name: Update compute_30 to compute_52
-              replace:
-                path: "{{ src_dir }}/configure"
-                regexp: 'compute_30'
-                replace: 'compute_52'
-
-            - name: Update sm_30 to sm_52
-              replace:
-                path: "{{ src_dir }}/configure"
-                regexp: 'sm_30'
-                replace: 'sm_52'
-
         - name: Configure ffmpeg
           command: "./configure {{ ffmpeg_config_base }} {{ ffmpeg_config_nvidia|default('') }} {{ ffmpeg_config_qsv|default('') }}"
           args:

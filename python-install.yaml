@@ -1,0 +1,76 @@
+- name: Remove existing Python installs
+  import_playbook: python-remove.yaml
+
+- hosts: all
+  become: true
+
+  vars_files: vars/python.yaml
+
+  tasks:
+    - name: Install dependencies
+      apt:
+        name: "{{ packages }}"
+      vars:
+        packages:
+          - openssl
+          - libssl-dev
+          - libreadline-dev
+          - libffi-dev
+          - zlib1g-dev
+          - sqlite3
+          - libsqlite3-dev
+          - libbz2-dev
+          - libncurses5-dev
+          - libgdbm-dev
+          - liblzma-dev
+
+    - name: "Fetch Python {{ PYTHON_VERSION }} archive"
+      get_url:
+        url: "{{ PYTHON_TAR_URL }}"
+        dest: /tmp
+        checksum: "{{ PYTHON_TAR_CHECKSUM }}"
+      register: download
+
+    - name: "Delete any old workspace ({{ BUILD_WORKSPACE }})"
+      file:
+        path: "{{ BUILD_WORKSPACE }}"
+        state: absent
+
+    - name: "Create workspace ({{ BUILD_WORKSPACE }})"
+      file:
+        path: "{{ BUILD_WORKSPACE }}"
+        state: directory
+        mode: u+rw,g+rw,o+rw
+
+    - name: Extract Python {{ PYTHON_VERSION }} archive
+      unarchive:
+        src: "{{ download.dest }}"
+        dest: "{{ BUILD_WORKSPACE }}"
+        remote_src: yes
+
+    - name: "Configure Python {{ PYTHON_VERSION }}"
+      command: "./configure --prefix {{ PYTHON_PREFIX }} --enable-optimizations --enable-shared"
+      args:
+        chdir: "{{ BUILD_WORKSPACE }}/Python-{{ PYTHON_VERSION }}"
+
+    - name: "Make Python {{ PYTHON_VERSION }}"
+      command: "make {{ JARG }}"
+      args:
+        chdir: "{{ BUILD_WORKSPACE }}/Python-{{ PYTHON_VERSION }}"
+
+    - name: "Install Python {{ PYTHON_VERSION }}"
+      command: "make install"
+      args:
+        chdir: "{{ BUILD_WORKSPACE }}/Python-{{ PYTHON_VERSION }}"
+
+    - name: "Set LD_LIBRARY_PATH in profile script ({{ PYTHON_PROFILE_FILE }})"
+      blockinfile:
+        path: "{{ PYTHON_PROFILE_FILE }}"
+        create: yes
+        state: present
+        block: |
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{{ PYTHON_INSTALL_DIR }}/lib
+
+  vars:
+    BUILD_WORKSPACE: /tmp/python_build_workspace
+    JARG: -j9

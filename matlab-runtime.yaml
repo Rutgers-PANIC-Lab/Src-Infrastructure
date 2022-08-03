@@ -66,7 +66,7 @@
   vars:
     matlab_runtime_version: R2022a
     matlab_runtime_version_code: v912
-    matlab_runtime_url: https://ssd.mathworks.com/supportfiles/downloads/R2022a/Release/1/deployment_files/installer/complete/glnxa64/MATLAB_Runtime_R2022a_Update_1_glnxa64.zip
+    matlab_runtime_url: https://ssd.mathworks.com/supportfiles/downloads/R2022a/Release/1/deployment_files/installer/complete/glnxa64/MATLAB_Runtime_R2022a_Update_3_glnxa64.zip
     matlab_installer_path: /tmp/matlab_runtime_installer
     matlab_install_path_prefix: /usr/local/MATLAB/Runtime
     matlab_install_path: "{{matlab_install_path_prefix}}/{{ matlab_runtime_version }}"

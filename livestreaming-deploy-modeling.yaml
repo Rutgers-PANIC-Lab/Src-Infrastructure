@@ -1,0 +1,16 @@
+- name: Install Livestreaming Services
+  import_playbook: livestreaming-install.yaml
+
+- name: Install Scheduler Dependencies
+  import_playbook: livestreaming-scheduler-deps.yaml
+  when: "'livestreaming_scheduler' in group_names"
+
+- name: Configure Livestreaming Workers
+  import_playbook: livestreaming-worker-config.yaml
+  vars:
+    NODE_EXTRA_ARGS: '--scheduler=ModelBuildingScheduler --debug'
+  when: "'livestreaming_workers' in group_names"
+
+- name: Start Livestreaming Workers
+  import_playbook: livestreaming-worker-start.yaml
+  when: "'livestreaming_workers' in group_names"

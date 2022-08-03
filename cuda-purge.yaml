@@ -1,0 +1,41 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Remove/Purge CUDA
+      when: cuda|default('false')|bool
+      block:
+        - name: Remove packages
+          apt:
+            name: "{{ item }}"
+            purge: yes
+            state: absent
+          ignore_errors: yes
+          loop:
+            - "*cuda*"
+            - "*cublas*"
+            - "*cufft*"
+            - "*cufile*"
+            - "*curand*"
+            - "*cusolver*"
+            - "*cusparse*"
+            - "*gds-tools*"
+            - "*npp*"
+            - "*nvjpeg*"
+            - "nsight*"
+            - "*nvidia*"
+
+        - name: Remove symbolic link
+          file:
+            path: /usr/local/cuda
+            state: absent
+
+        - name: Set system wide PATH
+          file:
+            path: /etc/profile.d/cuda-path.sh
+            state: absent
+
+        - name: Remove dependencies that are no longer required (with purge)
+          apt:
+            autoremove: yes
+            purge: yes

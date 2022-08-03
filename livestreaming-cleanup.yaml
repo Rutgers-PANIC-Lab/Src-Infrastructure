@@ -1,0 +1,8 @@
+- name: Cleanup Logs
+  import_playbook: livestreaming-clean-logs.yaml
+
+- name: Cleanup Output Fast
+  import_playbook: livestreaming-clean-output-fast.yaml
+
+- name: Cleanup Output
+  import_playbook: livestreaming-clean-output.yaml

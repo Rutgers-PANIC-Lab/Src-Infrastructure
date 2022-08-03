@@ -5,18 +5,9 @@
     - name: Install CUDA
       when: cuda|default('false')|bool
       block:
-        - name: Download CUDA PIN
-          get_url:
-            url: "{{ cuda_pin_url }}"
-            dest: /etc/apt/preferences.d/cuda-repository-pin-600
-
-        - name: Add CUDA APT key
-          apt_key:
-            url: "{{ cuda_key_url }}"
-
-        - name: Add CUDA repo
-          apt_repository:
-            repo: "deb {{ cuda_repo_url }} /"
+        - name: Install new CUDA key
+          apt:
+            deb: "{{ cuda_repo_url }}/cuda-keyring_1.0-1_all.deb"
             state: present
 
         - name: Update APT cache
@@ -46,6 +37,4 @@
           reboot:
 
   vars:
-    cuda_pin_url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-ubuntu1804.pin
-    cuda_key_url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
     cuda_repo_url: http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/

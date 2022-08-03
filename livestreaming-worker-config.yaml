@@ -1,0 +1,16 @@
+- name: Stop worker processes
+  import_playbook: livestreaming-worker-stop.yaml
+
+- hosts: all
+  become: true
+
+  vars_files: vars/livestreaming.yaml
+
+  tasks:
+    - name: Set NODE_EXTRA_ARGS variable
+      become: yes
+      blockinfile:
+        path: "{{ LIVESTREAMING_ENVIRONMENT_FILE }}"
+        state: present
+        block: |
+          NODE_EXTRA_ARGS={{ NODE_EXTRA_ARGS }}

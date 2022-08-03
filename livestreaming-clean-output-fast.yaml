@@ -1,0 +1,7 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Delete output files (fast)
+      command: bash -c 'for f in /tmp/*.mov; do rm -f $f; done'
+      ignore_errors: true

@@ -1,0 +1,23 @@
+- hosts: all
+  become: true
+
+  vars_files: vars/python.yaml
+
+  tasks:
+    - name: Find existing Python installs
+      find:
+        paths: "{{ PYTHON_INSTALL_BASE }}"
+        patterns: "python-*"
+        file_type: directory
+      register: dirs_to_delete
+
+    - name: Remove existing Python installs
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      with_items: "{{ dirs_to_delete.files }}"
+
+    - name: "Remove existing profile script ({{ PYTHON_PROFILE_FILE }})"
+      file:
+        path: "{{ PYTHON_PROFILE_FILE }}"
+        state: absent

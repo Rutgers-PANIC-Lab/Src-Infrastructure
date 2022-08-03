@@ -1,0 +1,25 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Install CUDA
+      when: cuda|default('false')|bool
+      block:
+        - name: Remove old CUDA APT key
+          apt_key:
+            id: 7fa2af80
+            state: absent
+
+        - name: Install new CUDA key
+          apt:
+            deb: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-keyring_1.0-1_all.deb
+            state: present
+
+        - name: Delete old CUDA repo file
+          file:
+            path: /etc/apt/sources.list.d/developer_download_nvidia_com_compute_cuda_repos_ubuntu1804_x86_64.list
+            state: absent
+
+        - name: Update APT cache
+          apt:
+            update_cache: yes
