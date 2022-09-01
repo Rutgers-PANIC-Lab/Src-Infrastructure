@@ -2,6 +2,6 @@
   become: true
 
   tasks:
-    - name: Start smartctl long test on /dev/sda
+    - name: Update smartctl drive database
       command:
         cmd: update-smart-drivedb
