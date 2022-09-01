@@ -1,0 +1,13 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Check for /dev/sda
+      stat:
+        path: /dev/sda
+      register: stat_sda_result
+
+    - name: Start smartctl long test on /dev/sda
+      command:
+        cmd: smartctl -t long /dev/sda
+      when: stat_sda_result.stat.isblk

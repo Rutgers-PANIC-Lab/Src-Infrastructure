@@ -1,0 +1,13 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Check for /dev/sda
+      stat:
+        path: /dev/sda
+      register: stat_sda_result
+
+    - name: Get smartctl test result on /dev/sda
+      command:
+        cmd: "bash -c 'smartctl -a /dev/sda | grep Extended'"
+      when: stat_sda_result.stat.exists and stat_sda_result.stat.isblk
