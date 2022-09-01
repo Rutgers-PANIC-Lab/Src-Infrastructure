@@ -1,0 +1,7 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Start smartctl long test on /dev/sda
+      command:
+        cmd: update-smart-drivedb
