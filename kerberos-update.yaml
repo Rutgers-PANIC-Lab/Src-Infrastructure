@@ -2,11 +2,23 @@
   become: true
 
   tasks:
+    - name: Install dep for ansible
+      apt:
+        name: python-jmespath
+
+    - name: Clear ansible pull directory
+      file:
+        path: /tmp/.ansible-pull
+        state: absent
+
     - name: Update Kerberos settings (Panic/Parasol)
-      command: ansible-pull -f -U https://github.com/Rutgers-PANIC-Lab/Src-Infrastructure.git kerberos-init.yaml
+      command: ansible-pull -f -U https://github.com/Rutgers-PANIC-Lab/Src-Infrastructure.git kerberos-init.yaml --directory /tmp/.ansible-pull/Src-Infrastructure -e ansible_python_interpreter=/usr/bin/python3 -e force_new_keytab=1
+
+    - name: Initialize Kerberos settings (LCSR)
+      command: ansible-pull -f -U http://config.lcsr.rutgers.edu/git/systems-playbooks kerberos-self.yml --directory /tmp/.ansible-pull/systems-playbooks -e ansible_python_interpreter=/usr/bin/python3
 
     - name: Update Kerberos settings (LSCR)
-      command: ansible-pull -f -U https://github.com/clhedrick/kerberos-ansible.git kerberos.yml
+      command: ansible-pull -f -U http://config.lcsr.rutgers.edu/git/systems-playbooks kerberos.yml --directory /tmp/.ansible-pull/systems-playbooks -e ansible_python_interpreter=/usr/bin/python3
 
     - name: Reboot the machine
       reboot:

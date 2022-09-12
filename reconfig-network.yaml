@@ -1,0 +1,29 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Update hostname
+      lineinfile:
+        path: /var/lib/cloud/seed/nocloud-net/user-data
+        search_string: 'hostname:'
+        line: 'hostname: {{ inventory_hostname }}'
+
+    - name: Replace cloud-init networking config file
+      copy:
+        src: config-files/{{ server_type }}/netplan.yaml
+        dest: /etc/cloud/cloud.cfg.d/50-curtin-networking.cfg
+
+    - name: Clean cloud-init
+      command:
+        cmd: cloud-init clean
+
+    - name: Initialize cloud-init
+      command:
+        cmd: cloud-init init
+
+    - name: Reboot machine
+      reboot:
+        msg: Rebooting now!
+
+  vars:
+    server_type: "{{ inventory_hostname.split('-')[:3] | join('-') }}"

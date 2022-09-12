@@ -1,4 +1,4 @@
-- hosts: localhost
+- hosts: all
   become: true
 
   tasks:
@@ -8,7 +8,10 @@
 
     - name: add domain to hostname
       when: not '.' in hostname
-      command: hostnamectl set-hostname {{ hostname }}.{{ hostname_domain }}
+      command: hostnamectl set-hostname {{ hostname }}.{{ domain }}
+
+    - name: Reload facts in case the hostname changed
+      setup:
 
     # we assume that it is good if it is already in place
     - name: Check for existing keytable
@@ -42,15 +45,15 @@
             state: touch
             mode: '0600'
 
-      when: keytab_stat.stat.exists != true
+      when: keytab_stat.stat.exists != true or (force_new_keytab is defined and force_new_keytab == '1')
 
     - name: Set up config file (login group {{ group }} / admin group {{ group_admin }}
       lineinfile:
         path: /etc/ansible/hosts
         state: present
         create: yes
-        line: "localhost nfsserver=true local_homedir=true grouplist=coresysadmins,{{ group }} sudogroups=slide,{{ group_admin }} net_autofs=true domain=cs.rutgers.edu nocommonmkdir=true"
+        line: "localhost nfsserver=true local_homedir=true grouplist=coresysadmins,{{ group }} sudogroups=slide,{{ group_admin }} net_autofs=true domain=cs.rutgers.edu"
   vars:
     server: services.cs.rutgers.edu
     hostname: "{{ ansible_nodename }}"
-    hostname_domain: cs.rutgers.edu
+    domain: cs.rutgers.edu

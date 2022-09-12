@@ -1,0 +1,20 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Replace cloud-init networking config file
+      copy:
+        src: config-files/parasol-edge-xs/50-curtin-networking.cfg
+        dest: /etc/cloud/cloud.cfg.d/50-curtin-networking.cfg
+
+    - name: Clean cloud-init
+      command:
+        cmd: cloud-init clean
+
+    - name: Initialize cloud-init
+      command:
+        cmd: cloud-init init
+
+    - name: Reboot machine
+      reboot:
+        msg: Rebooting now!

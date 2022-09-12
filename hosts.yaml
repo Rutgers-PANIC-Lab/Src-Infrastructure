@@ -7,49 +7,54 @@ all:
 
     parasol:
       children:
-        parasol_edge_xe3:
+        parasol_edge_xs:
           hosts:
-            parasol-edge-xe3-[00:07].cs.rutgers.edu:
-          vars:
-            qsv: true
-        parasol_edge_xe3nv:
-          hosts:
-            parasol-edge-xe3nv-[00:02].cs.rutgers.edu:
-          vars:
-            cuda: true
-            qsv: true
-        parasol_edge_xd:
-          hosts:
-            parasol-edge-xd-[00:07].cs.rutgers.edu:
+            parasol-edge-xs-[00:07].cs.rutgers.edu:
 
     panic:
       children:
-        panic_cloud:
-          hosts:
-            panic-cloud-[00:07].cs.rutgers.edu
         panic_cloud_gpu:
           hosts:
-            panic-cloud-gpu-[00:02].cs.rutgers.edu
+            panic-cloud-gpu-[00:02].cs.rutgers.edu:
           vars:
             cuda: true
+
         panic_cloud_optane:
           hosts:
-            panic-cloud-optane-[00:01].cs.rutgers.edu
+            panic-cloud-optane-[00:01].cs.rutgers.edu:
+
         panic_desk:
           hosts:
             panic-desk-03.cs.rutgers.edu
+
+        panic_cloud_xe3:
+          hosts:
+            panic-cloud-xe3-[00:07].cs.rutgers.edu:
+          vars:
+            qsv: true
+
+        panic_cloud_xe3nv:
+          hosts:
+            panic-cloud-xe3nv-[00:02].cs.rutgers.edu:
+          vars:
+            cuda: true
+            qsv: true
+
+        panic_cloud_xd:
+          hosts:
+            panic-cloud-xd-[00:07].cs.rutgers.edu:
 
     livestreaming:
       children:
         livestreaming_workers:
           hosts:
-            parasol-edge-xe3-[00:07].cs.rutgers.edu:
-            parasol-edge-xe3nv-[00:02].cs.rutgers.edu:
-            parasol-edge-xd-[00:07].cs.rutgers.edu:
+            panic-cloud-xe3-[00:07].cs.rutgers.edu:
+            panic-cloud-xe3nv-[00:02].cs.rutgers.edu:
+            panic-cloud-xd-[00:07].cs.rutgers.edu:
 
         livestreaming_scheduler:
           hosts:
-            panic-cloud-05.cs.rutgers.edu:
+            parasol-edge-xs-05.cs.rutgers.edu:
 
         livestreaming_big:
           children:
@@ -71,3 +76,5 @@ all:
     ansible_sudo_pass: "{{ansible_ssh_pass}}"
     ansible_ssh_timeout: 60
     ansible_ssh_retries: 5
+    ansible_remote_tmp: /tmp/.ansible-{{ ansible_ssh_user }}/tmp
+    ansible_python_interpreter: /usr/bin/python3

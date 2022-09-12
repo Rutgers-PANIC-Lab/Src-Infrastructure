@@ -1,0 +1,6 @@
+- hosts: all
+  become: false
+
+  tasks:
+    - name: Get release version
+      command: lsb_release -r

@@ -8,11 +8,10 @@
         update_cache: yes
       vars:
         packages:
-          - apt-transport-https
           - ca-certificates
           - curl
-          - gnupg-agent
-          - software-properties-common
+          - gnupg
+          - lsb-release
 
     - name: Add Docker GNUpg Key
       apt_key:
@@ -26,16 +25,25 @@
         repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
         state: present
 
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
     - name: Install Docker
       apt:
         name: docker-ce
-        update_cache: yes
 
     - name: Install Docker Compose
-      get_url:
-        url: https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64
-        dest: /usr/local/bin/docker-compose
-        mode: 0755
+      apt:
+        name: docker-compose-plugin
 
-  vars:
-    docker_compose_version: 1.24.0
+    - name: Install daemon.json config file
+      copy:
+        src: config-files/docker-daemon.json
+        dest: /etc/docker/daemon.json
+
+    - name: Restart Docker daemon
+      systemd:
+        daemon_reload: true
+        name: docker
+        state: restarted

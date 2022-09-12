@@ -1,4 +1,4 @@
-- hosts: localhost
+- hosts: all
   become: true
   environment:
     PATH: "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
