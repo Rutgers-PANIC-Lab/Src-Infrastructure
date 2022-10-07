@@ -4,6 +4,11 @@
     PATH: "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
 
   tasks:
+    - name: Install autofs
+      apt:
+        name: autofs
+        state: present
+
     - name: Do config tasks
       import_tasks:
         file: config_tasks.yaml
