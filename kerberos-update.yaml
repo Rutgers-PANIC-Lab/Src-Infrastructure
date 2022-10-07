@@ -4,7 +4,10 @@
   tasks:
     - name: Install dep for ansible
       apt:
-        name: python-jmespath
+        name:
+          - python3-jmespath
+          - ansible
+        state: present
 
     - name: Clear ansible pull directory
       file:
