@@ -19,22 +19,18 @@
             name: cuda
             state: latest
 
-        - name: Add symbolic link
-          file:
-            src: /usr/local/cuda-11
-            dest: /usr/local/cuda
-            state: link
-
         - name: Set system wide PATH
           blockinfile:
             path: /etc/profile.d/cuda-path.sh
             create: yes
             state: present
             block: |
-              export PATH=$PATH:/usr/local/cuda/bin
+              export PATH=$PATH:/usr/local/cuda-{{ cuda_version }}/bin
 
         - name: Reboot the machine
           reboot:
 
   vars:
-    cuda_repo_url: http://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/
+    ubuntu_url_path: "{{ ansible_distribution_version | replace('.', '') }}"
+    cuda_repo_url: http://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/
+    cuda_version: 11
