@@ -2,12 +2,6 @@
   become: true
 
   tasks:
-    - name: Download kbl_guc_33.0.0.bin from kernel source tree
-      get_url:
-        url: https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/i915/kbl_guc_33.0.0.bin
-        dest: /lib/firmware/i915/kbl_guc_33.0.0.bin
-        mode: 0644
-
     - name: Update linux-firmware
       apt:
         name: linux-firmware
