@@ -26,3 +26,8 @@
       command:
         cmd: "bash -c 'smartctl -a /dev/sda | grep \"Serial Number\"'"
       when: stat_sda_result.stat.exists and stat_sda_result.stat.isblk
+
+    - name: Get serial number on /dev/sda
+      command:
+        cmd: "bash -c 'smartctl -a /dev/sda | grep \"Firmware\"'"
+      when: stat_sda_result.stat.exists and stat_sda_result.stat.isblk
