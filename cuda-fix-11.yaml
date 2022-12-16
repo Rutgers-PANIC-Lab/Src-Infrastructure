@@ -1,0 +1,13 @@
+- hosts: all
+  become: true
+
+  tasks:
+        - name: Remove CUDA symbolic link
+          file:
+            path: /usr/local/cuda
+            state: absent
+
+        - name: Remove CUDA path file
+          file:
+            path: /etc/profile.d/cuda-path.sh
+            state: absent
