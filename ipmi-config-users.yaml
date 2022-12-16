@@ -1,0 +1,36 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Install dependencies
+      apt:
+        name: unzip
+        state: latest
+
+    - name: Download IPMICFG
+      get_url:
+        url: "https://www.supermicro.com/Bios/sw_download/481/{{ ipmicfg_version }}.zip"
+        dest: /tmp/ipmicfg.zip
+
+    - name: Extract IPMICFG
+      unarchive:
+        src: /tmp/ipmicfg.zip
+        dest: /tmp
+        remote_src: yes
+
+    - name: Reset ADMIN password
+      command: /tmp/{{ ipmicfg_version }}/Linux/64bit/IPMICFG-Linux.x86_64 -user setpwd 2 {{ admin_password }}
+
+    - name: Remove previous monitoring user
+      command: /tmp/{{ ipmicfg_version }}/Linux/64bit/IPMICFG-Linux.x86_64 -user del 3
+
+    - name: Add monitoring user
+      command: /tmp/{{ ipmicfg_version }}/Linux/64bit/IPMICFG-Linux.x86_64 -user add 3 monitoring {{ monitoring_password }} 2
+
+    - name: Reset IPMI Controller
+      command: /tmp/{{ ipmicfg_version }}/Linux/64bit/IPMICFG-Linux.x86_64 -r
+
+  vars:
+    ipmicfg_version: IPMICFG_1.34.0_build.220906
+    admin_password: M@rv!n340
+    monitoring_password: g1PvM3#C
