@@ -71,8 +71,8 @@ all:
               vars:
                 cuda: false
   vars:
-    ansible_sudo_pass: "{{ansible_ssh_pass}}"
+    ansible_sudo_pass: "{{ ansible_ssh_pass }}"
     ansible_ssh_timeout: 60
     ansible_ssh_retries: 5
-    ansible_remote_tmp: /tmp/.ansible-{{ ansible_ssh_user }}/tmp
+    ansible_remote_tmp: /tmp/.ansible-{{ ansible_user }}/tmp
     ansible_python_interpreter: /usr/bin/python3
