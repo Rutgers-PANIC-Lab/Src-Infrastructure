@@ -7,12 +7,29 @@ all:
 
     parasol:
       children:
-        parasol_edge_xs:
+        parasol_edge_xe3:
           hosts:
-            parasol-edge-xs-[00:07].cs.rutgers.edu:
+            parasol-edge-xe3-[00:07].cs.rutgers.edu:
+          vars:
+            qsv: true
+
+        parasol_edge_xe3nv:
+          hosts:
+            parasol-edge-xe3nv-[00:02].cs.rutgers.edu:
+          vars:
+            cuda: true
+            qsv: true
+
+        parasol_edge_xd:
+          hosts:
+            parasol-edge-xd-[00:07].cs.rutgers.edu:
 
     panic:
       children:
+        panic_cloud_xs:
+          hosts:
+            panic-cloud-xs-[00:07].cs.rutgers.edu:
+
         panic_cloud_gpu:
           hosts:
             panic-cloud-gpu-[00:02].cs.rutgers.edu:
@@ -27,34 +44,17 @@ all:
           hosts:
             panic-desk-03.cs.rutgers.edu
 
-        panic_cloud_xe3:
-          hosts:
-            panic-cloud-xe3-[00:07].cs.rutgers.edu:
-          vars:
-            qsv: true
-
-        panic_cloud_xe3nv:
-          hosts:
-            panic-cloud-xe3nv-[00:02].cs.rutgers.edu:
-          vars:
-            cuda: true
-            qsv: true
-
-        panic_cloud_xd:
-          hosts:
-            panic-cloud-xd-[00:07].cs.rutgers.edu:
-
     livestreaming:
       children:
         livestreaming_workers:
           hosts:
-            panic-cloud-xe3-[00:07].cs.rutgers.edu:
-            panic-cloud-xe3nv-[00:02].cs.rutgers.edu:
-            panic-cloud-xd-[00:07].cs.rutgers.edu:
+            parasol-edge-xe3-[00:07].cs.rutgers.edu:
+            parasol-edge-xe3nv-[00:02].cs.rutgers.edu:
+            parasol-edge-xd-[00:07].cs.rutgers.edu:
 
         livestreaming_scheduler:
           hosts:
-            parasol-edge-xs-05.cs.rutgers.edu:
+            panic-cloud-xs-05.cs.rutgers.edu:
 
         livestreaming_big:
           children:
