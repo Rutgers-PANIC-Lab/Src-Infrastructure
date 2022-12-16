@@ -2,24 +2,16 @@
   become: true
 
   tasks:
-    - name: Update hostname
+    - name: Update Hostname
+      hostname:
+        name: "{{ server_fqdn }}"
+        use: systemd
+
+    - name: Update /etc/hosts
       lineinfile:
-        path: /var/lib/cloud/seed/nocloud-net/user-data
-        search_string: 'hostname:'
-        line: 'hostname: {{ inventory_hostname }}'
-
-    - name: Replace cloud-init networking config file
-      copy:
-        src: config-files/{{ server_type }}/netplan.yaml
-        dest: /etc/cloud/cloud.cfg.d/50-curtin-networking.cfg
-
-    - name: Clean cloud-init
-      command:
-        cmd: cloud-init clean
-
-    - name: Initialize cloud-init
-      command:
-        cmd: cloud-init init
+        path: /etc/hosts
+        search_string: "127.0.1.1"
+        line: "127.0.1.1 {{ server_hostname }}"
 
     - name: Reboot machine
       reboot:
@@ -27,3 +19,5 @@
 
   vars:
     server_type: "{{ inventory_hostname.split('-')[:3] | join('-') }}"
+    server_hostname: "{{ inventory_hostname.replace('.cs.rutgers.edu', '') }}"
+    server_fqdn: "{{ inventory_hostname }}"
