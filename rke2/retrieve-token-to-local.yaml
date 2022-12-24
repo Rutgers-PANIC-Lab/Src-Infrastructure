@@ -1,0 +1,30 @@
+- hosts: all
+  become: true
+
+  tasks:
+  - name: State of token file
+    stat: path=/var/lib/rancher/rke2/server/node-token
+    register: node_token
+
+  - name: Get node token
+    shell: |
+      cat /var/lib/rancher/rke2/server/node-token
+    when: node_token.stat.exists
+    register: node_token_contents
+
+  - name: Get node hostname
+    shell: |
+      hostname
+    register: hostname_contents
+
+  - name: Save token to variable
+    set_fact:
+      resolve_conf: "server: https://{{ hostname_contents.stdout }}:9345\ntoken: {{ node_token_contents.stdout }}"
+
+  - name: Write to config file
+    ansible.builtin.copy:
+      content: "{{ resolve_conf }}"
+      dest: "output.txt"
+
+  - name: Clean up
+    command: rm -f output.txt

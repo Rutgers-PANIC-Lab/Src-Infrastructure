@@ -1,0 +1,13 @@
+- hosts: all
+  become: true
+
+  tasks:
+  - name: Stat stopall file
+    stat: path=/usr/local/bin/rke2-killall.sh
+    register: rke2_stopall
+
+  - name: Execute stop all
+    shell:
+      cmd: ./rke2-killall.sh
+      chdir: /usr/local/bin
+    when: rke2_stopall.stat.exists

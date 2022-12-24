@@ -1,0 +1,67 @@
+- hosts: all
+  become: true
+
+  tasks:
+  - name: Install binary
+    shell: |
+            sudo apt-get update && sudo apt-get install -y curl
+            curl -sfL https://get.rke2.io | sh -
+
+  - name: enable rke2-server and ensure it is not masked
+    systemd:
+      name: rke2-server.service
+      enabled: yes
+      masked: no
+
+  - name: Make sure rke2-server is running
+    systemd:
+      state: started
+      name: rke2-server.service
+
+  - name: State of token file
+    stat: path=/var/lib/rancher/rke2/server/node-token
+    register: node_token
+
+  - name: Get node token
+    shell: |
+      cat /var/lib/rancher/rke2/server/node-token
+    when: node_token.stat.exists
+    register: node_token_contents
+
+  - name: Get node hostname
+    shell: |
+      hostname
+    register: hostname_contents
+
+  - name: Save token to variable
+    set_fact:
+      resolve_conf: "server: https://{{ hostname_contents.stdout }}:9345\ntoken: {{ node_token_contents.stdout }}"
+
+  - name: Write to config file
+    ansible.builtin.copy:
+      content: "{{ resolve_conf }}"
+      dest: "output.txt"
+
+  - name: Fetch file into /rke2/config.yaml
+    ansible.builtin.fetch:
+      src: /output.txt
+      dest: ./config.yaml
+      flat: yes
+
+  - name: Clean up
+    command: rm -f output.txt
+
+  - name: Adding KUBECONFIG variable
+    ansible.builtin.copy:
+      content: export KUBECONFIG="/etc/rancher/rke2/rke2.yaml"
+      dest: /etc/profile.d/kubeconfig.sh
+
+  - name: Adding PATH variable
+    ansible.builtin.copy:
+      content: export PATH=$PATH:"/var/lib/rancher/rke2/bin"
+      dest: /etc/profile.d/kubepath.sh
+
+  - name: Kube cmd without sudo for users
+    ansible.builtin.file:
+      path: /etc/rancher/rke2/rke2.yaml
+      mode: '0644'

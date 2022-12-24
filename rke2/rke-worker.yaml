@@ -1,0 +1,28 @@
+- hosts: all
+  become: true
+
+  tasks:
+  - name: Install binary
+    shell: |
+            sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+            curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE="agent" sh -
+
+  - name: Make dir for config file
+    command: mkdir -p /etc/rancher/rke2/
+
+  - name: Copy config file to remote server
+    copy:
+      src: config.yaml
+      dest: /etc/rancher/rke2/
+      mode: 0644
+
+  - name: enable rke2-agent and ensure it is not masked
+    systemd:
+      name: rke2-agent.service
+      enabled: yes
+      masked: no
+
+  - name: Make sure rke2-agent is running
+    systemd:
+      state: started
+      name: rke2-agent.service
