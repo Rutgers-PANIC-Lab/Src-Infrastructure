@@ -15,7 +15,7 @@ all:
 
         parasol_edge_xe3nv:
           hosts:
-            parasol-edge-xe3nv-[00:03].cs.rutgers.edu:
+            parasol-edge-xe3nv-[00:02].cs.rutgers.edu:
           vars:
             cuda: true
             qsv: true
@@ -39,6 +39,10 @@ all:
         panic_cloud_optane:
           hosts:
             panic-cloud-optane-[00:01].cs.rutgers.edu:
+
+        panic_cloud_xe3nv:
+          hosts:
+            panic-cloud-xe3nv-[03:03].cs.rutgers.edu:
 
         panic_desk:
           hosts:
