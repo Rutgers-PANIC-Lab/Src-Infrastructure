@@ -23,8 +23,6 @@
       block:
         - name: Get keytable
           command: curl --local-port 1-1023 -o /tmp/keytable https://{{ server }}/accounts/enrollhosts?host={{ hostname }}
-          args:
-            warn: no
 
         - name: Validate the keytable
           shell: "xxd /tmp/keytable | head -n 1 | grep 0502"
