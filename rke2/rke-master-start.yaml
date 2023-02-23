@@ -1,0 +1,14 @@
+- hosts: all
+  become: true
+
+  tasks:
+  - name: enable rke2-server and ensure it is not masked
+    systemd:
+      name: rke2-server.service
+      enabled: yes
+      masked: no
+
+  - name: Make sure rke2-server is running
+    systemd:
+      state: started
+      name: rke2-server.service
