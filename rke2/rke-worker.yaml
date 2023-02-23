@@ -5,7 +5,7 @@
   - name: Install binary
     shell: |
             sudo apt-get update && sudo apt-get install -y apt-transport-https curl
-            curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE="agent" sh -
+            curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_VERSION=v1.26.1+rke2r1 INSTALL_RKE2_TYPE=“agent”
 
   - name: Make dir for config file
     command: mkdir -p /etc/rancher/rke2/
