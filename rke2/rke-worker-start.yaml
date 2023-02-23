@@ -1,0 +1,13 @@
+- hosts: all
+  become: true
+
+  - name: enable rke2-agent and ensure it is not masked
+    systemd:
+      name: rke2-agent.service
+      enabled: yes
+      masked: no
+
+  - name: Make sure rke2-agent is running
+    systemd:
+      state: started
+      name: rke2-agent.service

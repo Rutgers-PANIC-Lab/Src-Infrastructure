@@ -5,7 +5,7 @@
   - name: Install binary
     shell: |
             sudo apt-get update && sudo apt-get install -y curl
-            curl -sfL https://get.rke2.io | sh -
+            curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_VERSION=v1.26.1+rke2r1
 
   - name: enable rke2-server and ensure it is not masked
     systemd:
