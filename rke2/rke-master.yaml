@@ -2,10 +2,13 @@
   become: true
 
   tasks:
-  - name: update curl and install binary
+  - name: update curl
     shell: |
             sudo apt-get update && sudo apt-get install -y curl
-            curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION=v1.26.1+rke2r1
+
+  - name: Install RKE2
+    become: yes
+    shell: curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_VERSION=v1.26.1+rke2r1 sh -
 
   - name: enable rke2-server and ensure it is not masked
     systemd:
