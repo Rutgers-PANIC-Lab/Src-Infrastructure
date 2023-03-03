@@ -47,6 +47,9 @@ all:
         panic_desk:
           hosts:
             panic-desk-03.cs.rutgers.edu
+        panic_cloud_xe3nv:
+          hosts:
+            panic-cloud-xe3nv-03.cs.rutgers.edu
 
     livestreaming:
       children:
