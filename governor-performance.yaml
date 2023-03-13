@@ -2,11 +2,6 @@
   become: true
 
   tasks:
-    - name: Disable ondemand service
-      systemd:
-        name: ondemand
-        enabled: no
-
     - name: Find sysfs cpu files
       find:
         paths: /sys/devices/system/cpu
