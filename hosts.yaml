@@ -74,6 +74,15 @@ all:
                 panic-cloud-optane-00.cs.rutgers.edu:
               vars:
                 cuda: false
+
+    onofflearning:
+      children:
+        onofflearning_scheduler:
+          hosts:
+            parasol-edge-xe3nv-00.cs.rutgers.edu:
+        onofflearning_workers:
+          hosts:
+            parasol-edge-xe3-[00:07].cs.rutgers.edu:
   vars:
     ansible_sudo_pass: "{{ ansible_ssh_pass }}"
     ansible_ssh_timeout: 60
