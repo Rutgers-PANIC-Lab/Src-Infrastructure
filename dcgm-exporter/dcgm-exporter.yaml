@@ -1,0 +1,50 @@
+- hosts: all
+  become: true
+
+  tasks:
+      # install node-exporter
+      - name: Install golang
+        shell: |
+            sudo apt-get update && sudo apt-get install -y golang-go
+
+      # install node-exporter
+      - name: Install dcgm
+        shell: |
+            sudo apt-get update && sudo apt install -y datacenter-gpu-manager
+
+      - name: Clone dcgm-exporter
+        git:
+            repo: https://github.com/NVIDIA/dcgm-exporter.git
+            dest: /opt/dcgm-exporter
+            clone: yes
+            update: yes
+
+      - name: Make binaries and install for dcgm-exporter
+        shell: |
+            cd /opt/dcgm-exporter
+            make binary
+            make install
+
+      # Copy dcgm-exporter config file
+      - name: Copy default-counters.csv to host
+        copy:
+            src: "dcgm-config.csv"
+            dest: "/etc/dcgm-exporter/default-counters.csv"
+
+      # Copy dcgm-exporter.service
+      - name: Copy dcgm-exporter.service to host
+        copy:
+            src: "dcgm-exporter.service"
+            dest: "/etc/systemd/system/dcgm-exporter.service"
+
+      # Enable and start service
+      - name: Enable dcgm-exporter service
+        systemd:
+            name: dcgm-exporter
+            enabled: yes
+            masked: no
+
+      - name: Start dcgm-exporter service
+        systemd:
+            name: dcgm-exporter
+            state: restarted

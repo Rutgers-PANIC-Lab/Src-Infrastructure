@@ -24,4 +24,4 @@
       - name: Start prometheus-node-exporter service
         systemd:
             name: prometheus-node-exporter
-            state: started
+            state: restarted

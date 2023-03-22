@@ -1,0 +1,8 @@
+[Unit]
+Description=Systemd DCGM-Exporter Service Unit File
+
+[Service]
+ExecStart=dcgm-exporter
+
+[Install]
+WantedBy=multi-user.target
