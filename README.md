@@ -3,7 +3,21 @@ Repo to hold stuff used for deploying infrastructure.
 
 ## Deployment Instructions
 
-### **Draft: Deploying a New Panic or Parasol Node with Ubuntu 22.04 LTS**
+### **Current: Deploying a New Panic or Parasol Node with Ubuntu 22.04 LTS**
+
+1. **Reboot target machine using IPMI**
+    - Continually press F12 while it reboots so that it reboots from PXE/LAN
+
+2. **Select Install Ubuntu 22 from Network**
+    - Will restart over the course of roughly half an hour to 45 minutes
+  
+3. **Ensure home directory is present once it finishes**
+    - If not, follow Step 2 in the old procedure below.
+    
+---
+
+
+### **Old: Deploying a New Panic or Parasol Node with Ubuntu 22.04 LTS**
 
 1. **Install Ubuntu 22.04 LTS (Server)**
     - During installation, create a user with the following credentials:   
